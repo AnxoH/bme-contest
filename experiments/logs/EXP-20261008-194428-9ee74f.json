@@ -1,0 +1,20 @@
+{
+    "run_id": "EXP-20261008-194428-9ee74f",
+    "timestamp": "2026-10-08T19:44:28.605203",
+    "strategy_name": "SingleAsset_ELE",
+    "metrics": {
+        "Score_Avg": 8.456991920599197,
+        "Return_1M_Avg": -0.005853274968805226,
+        "Vol_Ann_Avg": 0.007428298854875544,
+        "Win_Rate": 0.007407407407407408,
+        "Avg_Trades_Month": 42.98518518518519,
+        "Qualification_Rate": 1.0
+    },
+    "metadata": {
+        "strategy_class": "SingleAssetMaster",
+        "params": {
+            "target_ticker": "ELE.MC",
+            "allocation_eur": 2500
+        }
+    }
+}

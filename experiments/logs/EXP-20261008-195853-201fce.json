@@ -1,0 +1,19 @@
+{
+    "run_id": "EXP-20261008-195853-201fce",
+    "timestamp": "2026-10-08T19:58:53.370378",
+    "strategy_name": "Patient_Sniper_60v_40rsi",
+    "metrics": {
+        "Score_Avg": 8.455417844458788,
+        "Return_1M_Avg": -0.0062103649929014515,
+        "Vol_Ann_Avg": 0.004909978843912606,
+        "Win_Rate_Return": 0.0,
+        "Rank_1_Rate": 0.5851851851851851,
+        "Avg_Rank": 1.9037037037037037,
+        "Avg_Trades_Month": 43.0,
+        "Qualification_Rate": 1.0
+    },
+    "metadata": {
+        "strategy_class": "PatientSniperStrategy",
+        "params": {}
+    }
+}

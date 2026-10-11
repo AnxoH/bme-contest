@@ -1,0 +1,21 @@
+{
+    "run_id": "EXP-20261008-184512-c70f48",
+    "timestamp": "2026-10-08T18:45:12.262767",
+    "strategy_name": "Quality_Reversion_200",
+    "metrics": {
+        "Score_Avg": 8.170415689805456,
+        "Return_1M_Avg": -0.005267680828362586,
+        "Vol_Ann_Avg": 0.007669442921358838,
+        "Win_Rate": 0.03389830508474576,
+        "Avg_Trades_Month": 42.71186440677966,
+        "Qualification_Rate": 0.9915254237288136
+    },
+    "metadata": {
+        "strategy_class": "OvernightQualityReversion",
+        "params": {
+            "allocation_eur": 2500,
+            "sma_period": 200,
+            "min_sma_dist": 1.05
+        }
+    }
+}

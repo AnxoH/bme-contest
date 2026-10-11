@@ -1,0 +1,20 @@
+{
+    "run_id": "EXP-20261008-185649-227e7a",
+    "timestamp": "2026-10-08T18:56:49.833259",
+    "strategy_name": "SingleAsset_IBE",
+    "metrics": {
+        "Score_Avg": 7.63186989690987,
+        "Return_1M_Avg": -0.00402391106459568,
+        "Vol_Ann_Avg": 0.004945094005640536,
+        "Win_Rate": 0.014814814814814815,
+        "Avg_Trades_Month": 25.585185185185185,
+        "Qualification_Rate": 0.9259259259259259
+    },
+    "metadata": {
+        "strategy_class": "SingleAssetMaster",
+        "params": {
+            "target_ticker": "IBE.MC",
+            "allocation_eur": 2500
+        }
+    }
+}

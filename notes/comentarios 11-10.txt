@@ -1,0 +1,11 @@
+# RESUMEN DÍA
+Hemos conseguido explotar el diseño de puntuación del concurso mediante una minimización absoluta de la volatilidad
+y minimizando las perdidas por comisiones.
+
+La clave esta en el esquema de seleccion rotatitva de activos (de entre un pool de cinco) 
+y mediante un analisis del Z-score.
+
+# FALTA HACER
+- Organización de las carpetas
+- Estructuración análisis de datos de forma correcta
+- Preparar para que se ejecute

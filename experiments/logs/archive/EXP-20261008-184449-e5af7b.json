@@ -1,0 +1,20 @@
+{
+    "run_id": "EXP-20261008-184449-e5af7b",
+    "timestamp": "2026-10-08T18:44:49.504289",
+    "strategy_name": "Turnaround_Tuesday",
+    "metrics": {
+        "Score_Avg": 8.166821045777768,
+        "Return_1M_Avg": -0.005194277842977175,
+        "Vol_Ann_Avg": 0.004663483308092849,
+        "Win_Rate": 0.007407407407407408,
+        "Avg_Trades_Month": 42.629629629629626,
+        "Qualification_Rate": 0.9925925925925926
+    },
+    "metadata": {
+        "strategy_class": "TurnaroundTuesday",
+        "params": {
+            "allocation_eur": 2500,
+            "dummy_allocation": 2500
+        }
+    }
+}

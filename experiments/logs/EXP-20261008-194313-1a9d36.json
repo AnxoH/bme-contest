@@ -1,0 +1,19 @@
+{
+    "run_id": "EXP-20261008-194313-1a9d36",
+    "timestamp": "2026-10-08T19:43:13.535080",
+    "strategy_name": "Conservative_BC_Rotation",
+    "metrics": {
+        "Score_Avg": 8.458399703803765,
+        "Return_1M_Avg": -0.006034924297894967,
+        "Vol_Ann_Avg": 0.005981177489549228,
+        "Win_Rate": 0.0,
+        "Avg_Trades_Month": 42.925925925925924,
+        "Qualification_Rate": 1.0
+    },
+    "metadata": {
+        "strategy_class": "ConservativeBlueChipRotation",
+        "params": {
+            "allocation_eur": 2500
+        }
+    }
+}

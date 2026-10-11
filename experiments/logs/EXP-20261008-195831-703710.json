@@ -1,0 +1,19 @@
+{
+    "run_id": "EXP-20261008-195831-703710",
+    "timestamp": "2026-10-08T19:58:31.662586",
+    "strategy_name": "Slow_Train_20v_10m",
+    "metrics": {
+        "Score_Avg": 8.459001219468215,
+        "Return_1M_Avg": -0.005913542253574169,
+        "Vol_Ann_Avg": 0.00420625019750986,
+        "Win_Rate_Return": 0.0,
+        "Rank_1_Rate": 0.6444444444444445,
+        "Avg_Rank": 1.7703703703703704,
+        "Avg_Trades_Month": 43.0,
+        "Qualification_Rate": 1.0
+    },
+    "metadata": {
+        "strategy_class": "SlowTrainStrategy",
+        "params": {}
+    }
+}

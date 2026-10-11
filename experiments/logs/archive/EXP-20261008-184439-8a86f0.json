@@ -1,0 +1,20 @@
+{
+    "run_id": "EXP-20261008-184439-8a86f0",
+    "timestamp": "2026-10-08T18:44:39.857267",
+    "strategy_name": "RSI_Overnight_5d",
+    "metrics": {
+        "Score_Avg": 8.223004463880178,
+        "Return_1M_Avg": -0.004984904687392932,
+        "Vol_Ann_Avg": 0.006293023201501858,
+        "Win_Rate": 0.007407407407407408,
+        "Avg_Trades_Month": 42.91111111111111,
+        "Qualification_Rate": 1.0
+    },
+    "metadata": {
+        "strategy_class": "RsiOvernightReversion",
+        "params": {
+            "rsi_period": 5,
+            "allocation_eur": 2500
+        }
+    }
+}

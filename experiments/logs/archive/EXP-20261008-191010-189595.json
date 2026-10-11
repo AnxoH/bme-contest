@@ -1,0 +1,20 @@
+{
+    "run_id": "EXP-20261008-191010-189595",
+    "timestamp": "2026-10-08T19:10:10.712420",
+    "strategy_name": "Seasonality_SafeHaven",
+    "metrics": {
+        "Score_Avg": 8.380134812743607,
+        "Return_1M_Avg": -0.007323697985603943,
+        "Vol_Ann_Avg": 0.011150424327258645,
+        "Win_Rate": 0.022222222222222223,
+        "Avg_Trades_Month": 42.57037037037037,
+        "Qualification_Rate": 0.9925925925925926
+    },
+    "metadata": {
+        "strategy_class": "SeasonalitySafeHaven",
+        "params": {
+            "dummy_allocation": 2500,
+            "strong_allocation": 10000
+        }
+    }
+}

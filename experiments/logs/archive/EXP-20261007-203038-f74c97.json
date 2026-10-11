@@ -1,0 +1,17 @@
+{
+    "run_id": "EXP-20261007-203038-f74c97",
+    "timestamp": "2026-10-07T20:30:38.286722",
+    "strategy_name": "BareMinimum",
+    "metrics": {
+        "Score_Avg": 0.0,
+        "Return_1M_Avg": -0.0023338826627553664,
+        "Vol_Ann_Avg": 0.0013878198506525681,
+        "Win_Rate": 0.0,
+        "Avg_Trades_Month": 17.14074074074074,
+        "Qualification_Rate": 0.0
+    },
+    "metadata": {
+        "strategy_class": "BareMinimumStrategy",
+        "params": {}
+    }
+}

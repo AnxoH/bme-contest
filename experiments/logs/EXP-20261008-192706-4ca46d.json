@@ -1,0 +1,19 @@
+{
+    "run_id": "EXP-20261008-192706-4ca46d",
+    "timestamp": "2026-10-08T19:27:06.800800",
+    "strategy_name": "UltraLowVol_Momentum",
+    "metrics": {
+        "Score_Avg": 8.396376738194602,
+        "Return_1M_Avg": -0.00601138470838813,
+        "Vol_Ann_Avg": 0.0046578160589905455,
+        "Win_Rate": 0.0,
+        "Avg_Trades_Month": 42.57037037037037,
+        "Qualification_Rate": 0.9925925925925926
+    },
+    "metadata": {
+        "strategy_class": "UltraLowVolMomentum",
+        "params": {
+            "allocation_eur": 2500
+        }
+    }
+}

@@ -1,0 +1,50 @@
+Ticker,Name,Sector,Industry,MarketCap,Is_IBEX35,MarketCap_B
+ANA.MC,"ACCIONA, S.A.",Industrials,Engineering & Construction,11364475904,True,11.364475904
+ANE.MC,CORPORACI...N ACCIONA ENERG...A,Utilities,Utilities - Renewable,7120614912,True,7.120614912
+ACS.MC,"ACS,ACTIVIDADES DE CONSTRUCCION",Industrials,Engineering & Construction,24779102208,True,24.779102208
+AENA.MC,"AENA, S.M.E., S.A.",Industrials,Airports & Air Services,38400000000,True,38.4
+AMS.MC,"AMADEUS IT GROUP, S.A.",Technology,Information Technology Services,22175297536,True,22.175297536
+MTS.MC,ARCELORMITTAL SA,Basic Materials,Steel,43144998912,True,43.144998912
+SAB.MC,BANCO DE SABADELL,Financial Services,Banks - Diversified,16431345664,True,16.431345664
+SAN.MC,BANCO SANTANDER S.A.,Financial Services,Banks - Diversified,171173543936,True,171.173543936
+BKT.MC,"BANKINTER, S.A.",Financial Services,Banks - Regional,14185920512,True,14.185920512
+BBVA.MC,BANCO BILBAO VIZCAYA ARGENTARIA,Financial Services,Banks - Diversified,130514591744,True,130.514591744
+CABK.MC,"CAIXABANK, S.A.",Financial Services,Banks - Regional,83588775936,True,83.588775936
+CLNX.MC,"CELLNEX TELECOM, S.A.",Real Estate,Real Estate Services,14927978496,True,14.927978496
+ENG.MC,"ENAGAS,S.A.",Utilities,Utilities - Regulated Gas,4339168256,True,4.339168256
+ELE.MC,"ENDESA,S.A.",Utilities,Utilities - Regulated Electric,42609188864,True,42.609188864
+FER.MC,FERROVIAL N.V.,Industrials,Engineering & Construction,34182301696,True,34.182301696
+FDR.MC,"FLUIDRA, S.A.",Consumer Cyclical,Leisure,3286877952,True,3.286877952
+GRF.MC,GRIFOLS S.A.,Healthcare,Drug Manufacturers - General,6488644096,True,6.488644096
+IAG.MC,INTL CONSOLIDATED AIRLINES GROU,Industrials,Airlines,22594643968,True,22.594643968
+IBE.MC,ACCIONES IBERDROLA,Utilities,Utilities - Diversified,138934812672,True,138.934812672
+ITX.MC,INDUSTRIA DE DISE...O TEXTIL S.,Consumer Cyclical,Apparel Retail,165843091456,True,165.843091456
+LOG.MC,COMPA...IA DE DISTRIBUCION INTE,Industrials,Integrated Freight & Logistics,4578072576,True,4.578072576
+MAP.MC,"MAPFRE, S.A.",Financial Services,Insurance - Diversified,12891146240,True,12.89114624
+MEL.MC,"MELIA HOTELS INTERNATIONAL, S.A",Consumer Cyclical,Lodging,2253781248,True,2.253781248
+MRL.MC,"MERLIN PROPERTIES SOCIMI, S.A.",Real Estate,REIT - Office,7498304000,True,7.498304
+NTGY.MC,"NATURGY ENERGY GROUP, S.A.",Utilities,Utilities - Regulated Gas,27273027584,True,27.273027584
+RED.MC,"REDEIA CORPORACION, S.A.",Utilities,Utilities - Regulated Electric,7986019328,True,7.986019328
+REP.MC,"REPSOL,  S.A.",Energy,Oil & Gas Integrated,30877634560,True,30.87763456
+ROVI.MC,LABORATORIOS FARMACEUTICOS ROVI,Healthcare,Drug Manufacturers - Specialty & Generic,2935608320,True,2.93560832
+SCYR.MC,"SACYR, S.A.",Industrials,Engineering & Construction,3167802112,True,3.167802112
+SLR.MC,SOLARIA ENERGIA Y MEDIO AMBIENT,Utilities,Utilities - Renewable,2180720384,True,2.180720384
+TEF.MC,"TELEFONICA,S.A.",Communication Services,Telecom Services,18652033024,True,18.652033024
+UNI.MC,"UNICAJA BANCO, S.A.",Financial Services,Banks - Regional,8566187008,True,8.566187008
+VIS.MC,"VISCOFAN, S.A.",Consumer Cyclical,Packaging & Containers,2408642304,True,2.408642304
+COL.MC,"COLONIAL SFL, SOCIMI. S.A.",Real Estate,REIT - Office,3035291136,True,3.035291136
+PUIG.MC,"PUIG BRANDS, S.A. CLASE B",Consumer Defensive,Household & Personal Products,9936472064,True,9.936472064
+ALM.MC,ALMIRALL S.A.,Healthcare,Drug Manufacturers - Specialty & Generic,2223927808,False,2.223927808
+CAF.MC,CONSTRUCCIONES Y AUXILIAR DE FE,Industrials,Railroads,2636940544,False,2.636940544
+CASH.MC,"PROSEGUR CASH, S.A.",Industrials,Integrated Freight & Logistics,978443712,False,0.978443712
+CIE.MC,"CIE AUTOMOTIVE, S.A.",Consumer Cyclical,Auto Parts,3053901824,False,3.053901824
+DIA.MC,DISTRIBUIDORA INTERNACIONAL DE ,Consumer Defensive,Discount Stores,2534379008,False,2.534379008
+DOM.MC,"GLOBAL DOMINION ACCESS, S.A.",Technology,Information Technology Services,401913600,False,0.4019136
+ENC.MC,"ENCE ENERGIA Y CELULOSA, S.A.",Basic Materials,Paper & Paper Products,537530752,False,0.537530752
+FAE.MC,"FAES FARMA, S.A.",Healthcare,Drug Manufacturers - Specialty & Generic,1407775744,False,1.407775744
+GSJ.MC,"GRUPO EMPRESARIAL SAN JOSE, S.A",Industrials,Engineering & Construction,482493536,False,0.482493536
+PHM.MC,"PHARMA MAR, S.A.",Healthcare,Biotechnology,1234454912,False,1.234454912
+TLGO.MC,"TALGO, S.A.",Industrials,Railroads,319756864,False,0.319756864
+TRE.MC,TECNICAS REUNIDAS S.A.,Industrials,Engineering & Construction,2052373632,False,2.052373632
+TUB.MC,"TUBACEX, S.A.",Basic Materials,Steel,351356896,False,0.351356896
+VID.MC,"VIDRALA, S.A.",Consumer Cyclical,Packaging & Containers,2898885376,False,2.898885376

@@ -1,0 +1,17 @@
+{
+    "run_id": "EXP-20261007-202704-4a92b9",
+    "timestamp": "2026-10-07T20:27:04.664027",
+    "strategy_name": "MeanReversion_Surv",
+    "metrics": {
+        "Score_Avg": 8.577952166415269,
+        "Return_1M_Avg": -0.005742709044470923,
+        "Vol_Ann_Avg": 0.015486182325914363,
+        "Win_Rate": 0.05185185185185185,
+        "Avg_Trades_Month": 28.377777777777776,
+        "Qualification_Rate": 0.9925925925925926
+    },
+    "metadata": {
+        "strategy_class": "MeanReversionStrategy",
+        "params": {}
+    }
+}
