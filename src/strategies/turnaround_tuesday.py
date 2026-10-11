@@ -24,7 +24,7 @@ class TurnaroundTuesday(BaseStrategy):
         # Hoy es 'current_date'. pandas weekday: 0=Monday, 1=Tuesday, etc.
         day_of_week = current_date.weekday()
         
-        if day_of_week == 0: # Monday
+        if day_of_week == 0 and len(close_prices) >= 2: # Monday
             # Invertir fuerte en el IBEX (podemos comprar Santander o algun blue chip)
             # Para simular, escogemos el de mayor caida hoy para hacer el rebote mas fuerte
             returns_today = close_prices.iloc[-1] / close_prices.iloc[-2] - 1

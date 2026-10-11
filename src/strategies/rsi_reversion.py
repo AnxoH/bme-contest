@@ -7,7 +7,7 @@ class RsiOvernightReversion(BaseStrategy):
         super().__init__(name=f"RSI_Overnight_{rsi_period}d", **kwargs)
         self.rsi_period = rsi_period
         self.allocation_eur = allocation_eur
-        self.metadata.update({'rsi_period': rsi_period, 'allocation_eur': allocation_eur})
+        self.params.update({'rsi_period': rsi_period, 'allocation_eur': allocation_eur})
 
     def calculate_rsi(self, series, period):
         delta = series.diff()
