@@ -48,10 +48,10 @@ class PatientSniperStrategy(BaseStrategy):
             
         # Volatilidad a 60 días
         recent_data = hist_data.tail(self.vol_window + 1)
-        returns = recent_data.pct_change().dropna()
-        volatility = returns.std()
+        returns = recent_data.pct_change()
+        volatility = returns.std().dropna()
         
-        if len(volatility.dropna()) == 0:
+        if len(volatility) == 0:
             return orders
             
         # Activo menos volatil

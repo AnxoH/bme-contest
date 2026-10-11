@@ -36,7 +36,7 @@ class SlowTrainStrategy(BaseStrategy):
             
         # Calcular volatilidad (usamos pct_change sobre los ultimos N dias)
         recent_data = hist_data.tail(self.vol_window + 1)
-        returns = recent_data.pct_change().dropna()
+        returns = recent_data.pct_change()
         volatility = returns.std()
         
         # Calcular momentum (retorno en ultimos M dias)

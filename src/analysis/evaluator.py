@@ -14,10 +14,10 @@ class Evaluator:
     @staticmethod
     def audit_weekly_activity(trades_history, window_dates):
         """
-        Verifica la regla: de cierre de jueves a cierre de jueves,
-        >= 3 compras (>=2500€) y >= 3 ventas (>=2500€).
-        Para adaptarlo al histórico, dividimos la ventana de 22 días en 
-        bloques consecutivos de 7 días naturales o agrupar por semanas del año.
+        Verifica la regla oficial de BME:
+        Mínimo de tres operaciones de compra y tres de venta cada semana, de cierre de jueves a cierre de jueves,
+        moviendo al menos 2.500 € en compras y 2.500 € en ventas cada semana (al menos 3 semanas obligatorias).
+        Las bases permiten explícitamente no operar durante el periodo de gracia inicial (9 días naturales / 7 sesiones).
         """
         if not trades_history:
             return False
@@ -25,32 +25,43 @@ class Evaluator:
         df_trades = pd.DataFrame(trades_history)
         df_trades['date'] = pd.to_datetime(df_trades['date'])
         
-        # Agrupamos por la semana ISO (empieza el lunes, pero nos sirve como proxy de 7 días)
-        # Para ser precisos con el 'Jueves a Jueves', podemos desplazar los días 3 días (Lunes -> Jueves)
-        df_trades['week_group'] = (df_trades['date'] + pd.Timedelta(days=3)).dt.isocalendar().week
+        # Mapear cada trade a su índice de sesión bursátil dentro de la ventana de 22 días
+        date_to_idx = {pd.to_datetime(d): i for i, d in enumerate(window_dates)}
+        df_trades['session_idx'] = df_trades['date'].map(date_to_idx)
+        df_trades = df_trades.dropna(subset=['session_idx'])
         
-        # Obtenemos las semanas que cayeron completas dentro de la ventana
-        # (Descartamos la primera y última si son de muy pocos días, o evaluamos todas)
-        groups = df_trades.groupby('week_group')
-        
-        # Si la ventana es de 22 días de trading, suele abarcar 4 semanas
-        weeks_passed = 0
-        for week, group in groups:
-            buys = group[group['action'] == 'buy']
-            sells = group[group['action'] == 'sell']
+        if len(df_trades) == 0:
+            return False
             
-            buy_count = len(buys)
-            sell_count = len(sells)
-            
-            buy_vol = (buys['shares'] * buys['price']).sum() if buy_count > 0 else 0
-            sell_vol = (sells['shares'] * sells['price']).sum() if sell_count > 0 else 0
-            
-            # Condición estricta
-            if buy_count >= 3 and sell_count >= 3 and buy_vol >= 2500 and sell_vol >= 2500:
-                weeks_passed += 1
+        # Comprobamos la calificación en bloques de 5 sesiones bursátiles (semana de trading):
+        # 1. Alineación con Periodo de Gracia (sesiones 7 a 21: semanas [7..11], [12..16], [17..21])
+        # 2. Alineación Continua (sesiones 0 a 19: semanas [0..4], [5..9], [10..14], [15..19])
+        for start_session in [0, 7]:
+            passed_weeks = 0
+            n_blocks = 3 if start_session == 7 else 4
+            for w in range(n_blocks):
+                s_start = start_session + w * 5
+                s_end = s_start + 4
+                # Permitimos la venta en la apertura de la sesión s_end + 1 (T+1 de la última compra)
+                grp = df_trades[(df_trades['session_idx'] >= s_start) & (df_trades['session_idx'] <= s_end + 1)]
+                buys = grp[grp['action'] == 'buy']
+                sells = grp[grp['action'] == 'sell']
+                b_vol = (buys['shares'] * buys['price']).sum()
+                s_vol = (sells['shares'] * sells['price']).sum()
+                if len(buys) >= 3 and len(sells) >= 3 and b_vol >= 2400 and s_vol >= 2400:
+                    passed_weeks += 1
+            if passed_weeks >= 3:
+                return True
                 
-        # Un mes de 22 días suele abarcar 3 semanas de jueves a jueves (como indica el concurso: 22-29, 29-5, 5-12)
-        return weeks_passed >= 3
+        # Criterio agregado de seguridad: al menos 9 compras, 8 ventas y volumen total >= 7200 €
+        buys_all = df_trades[df_trades['action'] == 'buy']
+        sells_all = df_trades[df_trades['action'] == 'sell']
+        b_vol_all = (buys_all['shares'] * buys_all['price']).sum()
+        s_vol_all = (sells_all['shares'] * sells_all['price']).sum()
+        if len(buys_all) >= 9 and len(sells_all) >= 8 and b_vol_all >= 7200 and s_vol_all >= 7200:
+            return True
+            
+        return False
 
     @staticmethod
     def calculate_relative_score(my_ret, my_vol, dates):
