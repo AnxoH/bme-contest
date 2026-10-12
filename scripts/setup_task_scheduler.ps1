@@ -5,41 +5,39 @@
 
 $TaskName = "BME_Contest_LiveRecommender"
 $WorkingDirectory = "d:\Escritorio\Profesional\BME contest"
-$PythonPath = (Get-Command python).Source
 
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host " CONFIGURACIÓN DEL PROGRAMADOR DE TAREAS DE WINDOWS (BME CONTEST)" -ForegroundColor Cyan
+Write-Host " CONFIGURACION DEL PROGRAMADOR DE TAREAS DE WINDOWS (BME CONTEST)" -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor Cyan
 Write-Host "Ruta de Trabajo: $WorkingDirectory"
-Write-Host "Intérprete Python: $PythonPath"
-Write-Host "Hora de Ejecución: 17:15 CET (Lunes a Jueves)"
+Write-Host "Hora de Ejecucion: 17:15 CET (Lunes a Jueves)"
 
-# Acción: Abrir una ventana de PowerShell interactiva que mantenga la salida abierta (-NoExit)
-$Argument = "-NoExit -Command `"Set-Location '$WorkingDirectory'; python scripts/run_live_recommendation.py`""
+# Accion: Abrir una ventana interactiva de PowerShell con el script ejecutado
+$ScriptCommand = "Set-Location 'd:\Escritorio\Profesional\BME contest'; python scripts/run_live_recommendation.py"
+$Argument = "-NoExit -Command `"$ScriptCommand`""
 $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $Argument -WorkingDirectory $WorkingDirectory
 
-# Disparador: Semanal Lunes, Martes, Miércoles y Jueves a las 17:15
+# Disparador: Semanal Lunes, Martes, Miercoles y Jueves a las 17:15
 $Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday, Tuesday, Wednesday, Thursday -At 17:15
 
-# Configuración adicional
+# Configuracion adicional
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 
 # Registrar o actualizar tarea
 try {
-    # Comprobar si ya existe para sobrescribir
     $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
     if ($existing) {
         Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
-        Write-Host "Tarea previa eliminada para actualizar configuración..." -ForegroundColor Yellow
+        Write-Host "Tarea previa eliminada para actualizar configuracion..." -ForegroundColor Yellow
     }
     
-    Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Ejecución diaria del motor de recomendaciones BME Contest a las 17:15 CET"
+    Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Ejecucion diaria del motor de recomendaciones BME Contest a las 17:15 CET"
     
-    Write-Host "`n[ÉXITO] Tarea '$TaskName' registrada correctamente en Windows." -ForegroundColor Green
-    Write-Host "Se ejecutará de Lunes a Jueves a las 17:15 abriendo una ventana con las recomendaciones."
-    Write-Host "`nPara probar la tarea ahora mismo manualmente, puedes ejecutar:"
+    Write-Host "`n[EXITO] Tarea '$TaskName' registrada correctamente en Windows." -ForegroundColor Green
+    Write-Host "Se ejecutara de Lunes a Jueves a las 17:15 CET abriendo una ventana con las recomendaciones."
+    Write-Host "`nPara probar la tarea ahora mismo manualmente, ejecuta:"
     Write-Host "  Start-ScheduledTask -TaskName '$TaskName'" -ForegroundColor Yellow
 } catch {
-    Write-Host "`n[ERROR] No se pudo registrar la tarea. Asegúrate de ejecutar PowerShell con permisos adecuados." -ForegroundColor Red
+    Write-Host "`n[ERROR] No se pudo registrar la tarea." -ForegroundColor Red
     Write-Host $_.Exception.Message
 }
