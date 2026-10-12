@@ -6,9 +6,9 @@ __pycache__/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-##Notes and papers
-notes
-papers
+## Notes and papers
+notes/
+papers/
 
 # Virtual environments
 .env

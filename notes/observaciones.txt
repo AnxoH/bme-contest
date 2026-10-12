@@ -1,4 +1,0 @@
-# Mercado de bonos
-# Elecciones de medio mandato
-
-# Meter todo el analisis técnico en el modulo EDA2
