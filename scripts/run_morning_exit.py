@@ -1,5 +1,11 @@
 import os
 import sys
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 import yfinance as yf
 from datetime import datetime
 
@@ -7,18 +13,32 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.live.ledger import TradesLedger
+from src.live.corporate_events import CorporateEventsChecker
 
 def main():
     now = datetime.now()
+    date_str = now.strftime('%Y-%m-%d')
     weekday_idx = now.weekday()
     weekday_names = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
     weekday_str = weekday_names[weekday_idx]
     
     print("=" * 80)
     print(" " * 18 + "BME CONTEST - APERTURA DE MERCADO (09:00:01 CET)")
-    print(" " * 20 + f"Fecha: {now.strftime('%Y-%m-%d')} ({weekday_str}) | Hora: {now.strftime('%H:%M:%S')} CET")
+    print(" " * 20 + f"Fecha: {date_str} ({weekday_str}) | Hora: {now.strftime('%H:%M:%S')} CET")
     print("=" * 80)
     
+    # Comprobar eventos macroeconómicos y corporativos de la mañana
+    corp_checker = CorporateEventsChecker()
+    macro_alerts = corp_checker.get_macro_alerts(date_str)
+    morning_corp = corp_checker.get_morning_alerts(date_str)
+    
+    if macro_alerts:
+        print("\n" + "!" * 80)
+        print("  🏛️  AVISO MACROECONÓMICO HOY (Bancos Centrales):")
+        for m_alert in macro_alerts:
+            print(f"      • {m_alert}")
+        print("!" * 80)
+
     ledger = TradesLedger()
     open_pos = ledger.get_current_open_position()
     
@@ -36,6 +56,13 @@ def main():
     buy_px = open_pos['buy_price']
     buy_amt = open_pos['buy_amount']
     buy_dt = open_pos['buy_date']
+    
+    # Alerta si el activo abierto tiene evento hoy en apertura
+    if ticker in morning_corp:
+        print("\n" + "!" * 80)
+        print(f"  ⚠️  AVISO DE EVENTO EN APERTURA PARA {ticker}:")
+        print(f"      • {morning_corp[ticker]}")
+        print("!" * 80)
     
     # Obtener precio de apertura en tiempo real
     print(f"\n[OBTENIENDO PRECIO DE APERTURA PARA {ticker}]...")

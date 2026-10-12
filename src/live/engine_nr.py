@@ -58,6 +58,7 @@ class EngineMicroAlfaNR:
             
             has_corp_risk = corporate_alerts.get(ticker, {}).get('has_risk', False) if corporate_alerts else False
             corp_status = corporate_alerts.get(ticker, {}).get('status_str', 'OK') if corporate_alerts else 'OK'
+            corp_detail = corporate_alerts.get(ticker, {}).get('detail', '') if corporate_alerts else ''
             
             records.append({
                 'Ticker': ticker,
@@ -71,15 +72,17 @@ class EngineMicroAlfaNR:
                 'Acciones': shares,
                 'Importe_EUR': amount_eur,
                 'Riesgo_Corporativo': has_corp_risk,
-                'Info_Corporativa': corp_status
+                'Info_Corporativa': corp_status,
+                'Detalle_Alerta': corp_detail
             })
             
         df = pd.DataFrame(records)
         
-        # Ordenación: Menor Ratio_NR primero (mayor compresión).
-        # Favorecemos activos en mitad inferior del rango; penalizamos los que tengan riesgo corporativo.
+        # Ordenación Cuantitativa Pura:
+        # 1º Mitad inferior del rango (0 si pos <= 50%, 1 si pos > 50%), 2º Menor Ratio_NR (mayor compresión).
+        # Las alertas se muestran de forma informativa sin sesgar el ranking matemático.
         df['Sort_Key'] = df.apply(
-            lambda r: (1 if r['Riesgo_Corporativo'] else 0, 0 if r['Mitad_Inferior'] else 1, r['Ratio_NR']), 
+            lambda r: (0 if r['Mitad_Inferior'] else 1, r['Ratio_NR']), 
             axis=1
         )
         df = df.sort_values('Sort_Key').reset_index(drop=True)

@@ -1,5 +1,12 @@
 import os
 import sys
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
+import argparse
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -30,14 +37,30 @@ def format_row(values, widths, aligns=None):
     return " | ".join(parts)
 
 def main():
+    parser = argparse.ArgumentParser(description="Motor de Recomendación en Vivo BME Contest (17:15 - 17:25 CET)")
+    parser.add_argument("--date", type=str, default=None, help="Fecha simulada en formato YYYY-MM-DD (ej: 2026-10-27)")
+    args = parser.parse_args()
+
     now = datetime.now()
-    weekday_idx = now.weekday()
+    sim_date = args.date
+    is_simulated = sim_date is not None
+
+    if is_simulated:
+        target_dt = datetime.strptime(sim_date, '%Y-%m-%d')
+        date_str = sim_date
+        weekday_idx = target_dt.weekday()
+    else:
+        target_dt = now
+        date_str = now.strftime('%Y-%m-%d')
+        weekday_idx = now.weekday()
+
     weekday_names = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
     weekday_str = weekday_names[weekday_idx]
     
     print("=" * 95)
     print(" " * 22 + "BME CONTEST - MOTOR DE DECISIÓN EN VIVO (17:15 - 17:25 CET)")
-    print(" " * 25 + f"Fecha: {now.strftime('%Y-%m-%d')} ({weekday_str}) | Hora: {now.strftime('%H:%M:%S')} CET")
+    sim_note = " [SIMULACIÓN]" if is_simulated else ""
+    print(" " * 20 + f"Fecha: {date_str} ({weekday_str}){sim_note} | Hora: {now.strftime('%H:%M:%S')} CET")
     print("=" * 95)
     
     # 1. Auditoría del Estado Semanal BME y Posiciones Abiertas
@@ -62,22 +85,37 @@ def main():
     else:
         print(f"  • Posición abierta:    NINGUNA (100% Liquidez)")
         
-    if weekday_idx == 4:
+    if weekday_idx == 4 and not is_simulated:
         print("\n" + "!" * 95)
         print("  AVISO CRÍTICO DE VIERNES: Micro-Alfa NO opera los viernes.")
         print("  Las posiciones overnight en fin de semana conllevan riesgo innecesario de gap de lunes.")
         print("!" * 95)
         return
 
-    # 2. Ingesta de Datos en Vivo
+    # 2. Comprobación y Banners de Eventos Macroeconómicos y Corporativos
+    corp_checker = CorporateEventsChecker()
+    alerts_summary = corp_checker.get_all_alerts_summary(date_str)
+    
+    if alerts_summary['has_macro']:
+        print("\n" + "!" * 95)
+        print("  🏛️  AVISO MACROECONÓMICO HOY (Bancos Centrales):")
+        for m_alert in alerts_summary['macro_alerts']:
+            print(f"      • {m_alert}")
+        print("!" * 95)
+        
+    if alerts_summary['has_corporate']:
+        print("\n" + "!" * 95)
+        print("  ⚠️  ALERTA DE EVENTOS CORPORATIVOS HOY (Noche de Exclusión Sugerida):")
+        for ticker, data in alerts_summary['active_corporate'].items():
+            print(f"      • [{ticker}] {data['detail']}")
+        print("!" * 95)
+
+    # 3. Ingesta de Datos en Vivo
     print("\n" + "-" * 95)
     print("[2] OBTENIENDO COTIZACIONES EN TIEMPO REAL (5 Utilities)...")
     feed = LiveDataFeed()
     market_data, snapshots = feed.get_full_market_data()
-    
-    # 3. Comprobación de Eventos Corporativos
-    corp_checker = CorporateEventsChecker()
-    corp_alerts = corp_checker.check_events()
+    corp_alerts = alerts_summary['corporate_alerts']
     
     # 4. Evaluación de Motor 1: Micro-Alfa CS
     engine_cs = EngineMicroAlfaCS(window=20, target_order_eur=900.0)
@@ -94,7 +132,7 @@ def main():
     print("-" * 95)
     
     headers_cs = ["Rank", "Ticker", "Nombre", "Precio", "Ret. Intra", "Z-Score", "Accs (~900€)", "Total (€)", "Alertas"]
-    widths_cs  = [4, 7, 20, 9, 10, 9, 12, 10, 8]
+    widths_cs  = [4, 7, 18, 9, 10, 9, 12, 10, 14]
     aligns_cs  = ['^', '<', '<', '>', '>', '>', '>', '>', '^']
     
     print(format_row(headers_cs, widths_cs, aligns_cs))
@@ -121,12 +159,19 @@ def main():
         
         line = format_row(row_vals, widths_cs, aligns_cs)
         if r['Rank'] == 1:
-            print(">>> " + line + "  <-- RECOMENDADO CS")
+            print(">>> " + line + "  <-- 1º CUANTITATIVO CS")
         else:
             print("    " + line)
             
     top_cs = df_cs.iloc[0]
-    print(f"\n--> SELECCIÓN MOTOR CS: Comprar {top_cs['Acciones']} acciones de {top_cs['Ticker']} ({top_cs['Importe_EUR']:.2f} €)")
+    print(f"\n--> SELECCIÓN MOTOR CS: {top_cs['Ticker']} -> Comprar {top_cs['Acciones']} acciones (~{top_cs['Importe_EUR']:.2f} €)")
+    if top_cs['Riesgo_Corporativo']:
+        sec_cs = df_cs.iloc[1]
+        print(f"    ⚠️  AVISO DE EVENTO EN ACTIVO 1º: {top_cs['Ticker']} tiene evento corporativo previsto:")
+        print(f"       -> {top_cs['Detalle_Alerta']}")
+        print(f"       -> Nota: El modelo cuantitativo puro lo selecciona como 1º, pero la recomendación de")
+        print(f"          calendario de riesgo es evitarlo y pasar a la 2ª opción:")
+        print(f"          >>> Alternativa limpia: {sec_cs['Ticker']} ({sec_cs['Acciones']} accs a ~{sec_cs['Precio_Actual']:.2f} € = {sec_cs['Importe_EUR']:.2f} €)")
 
     # 7. Mostrar Resultados de Motor 2: NR10 Compression
     print("\n" + "=" * 95)
@@ -134,9 +179,9 @@ def main():
     print("Criterio: Menor Ratio NR = Mayor contracción de volatilidad. Prioriza mitad inferior.")
     print("-" * 95)
     
-    headers_nr = ["Rank", "Ticker", "Nombre", "Precio", "Rango Hoy", "Rango 10d", "Ratio NR", "Pos. Rango", "Accs", "Total (€)"]
-    widths_nr  = [4, 7, 20, 9, 9, 9, 8, 10, 5, 9]
-    aligns_nr  = ['^', '<', '<', '>', '>', '>', '>', '^', '>', '>']
+    headers_nr = ["Rank", "Ticker", "Nombre", "Precio", "Rango Hoy", "Ratio NR", "Pos. Rango", "Accs", "Total (€)", "Alertas"]
+    widths_nr  = [4, 7, 18, 9, 9, 8, 12, 5, 10, 14]
+    aligns_nr  = ['^', '<', '<', '>', '>', '>', '^', '>', '>', '^']
     
     print(format_row(headers_nr, widths_nr, aligns_nr))
     print("-" * 95)
@@ -144,7 +189,6 @@ def main():
     for _, r in df_nr.iterrows():
         px_str = f"{r['Precio_Actual']:.2f} €"
         rg_hoy = f"{r['Rango_Hoy_%']:.2f}%"
-        rg_10d = f"{r['Rango_Medio_10d_%']:.2f}%"
         ratio_str = f"{r['Ratio_NR']:.2f}"
         pos_str = f"{r['Posicion_Rango_%']:.0f}% (Inf)" if r['Mitad_Inferior'] else f"{r['Posicion_Rango_%']:.0f}% (Sup)"
         tot_str = f"{r['Importe_EUR']:.2f} €"
@@ -156,37 +200,47 @@ def main():
             r['Nombre'],
             px_str,
             rg_hoy,
-            rg_10d,
             ratio_str,
             pos_str,
             str(r['Acciones']),
-            tot_str
+            tot_str,
+            r['Info_Corporativa']
         ]
         
         line = format_row(row_vals, widths_nr, aligns_nr)
         if r['Rank'] == 1:
-            print(">>> " + line + "  <-- RECOMENDADO NR10")
+            print(">>> " + line + "  <-- 1º CUANTITATIVO NR10")
         else:
             print("    " + line)
             
     top_nr = df_nr.iloc[0]
-    print(f"\n--> SELECCIÓN MOTOR NR10: Comprar {top_nr['Acciones']} acciones de {top_nr['Ticker']} ({top_nr['Importe_EUR']:.2f} €)")
+    print(f"\n--> SELECCIÓN MOTOR NR10: {top_nr['Ticker']} -> Comprar {top_nr['Acciones']} acciones (~{top_nr['Importe_EUR']:.2f} €)")
+    if top_nr['Riesgo_Corporativo']:
+        sec_nr = df_nr.iloc[1]
+        print(f"    ⚠️  AVISO DE EVENTO EN ACTIVO 1º: {top_nr['Ticker']} tiene evento corporativo previsto:")
+        print(f"       -> {top_nr['Detalle_Alerta']}")
+        print(f"       -> Nota: El modelo cuantitativo puro lo selecciona como 1º, pero la recomendación de")
+        print(f"          calendario de riesgo es evitarlo y pasar a la 2ª opción:")
+        print(f"          >>> Alternativa limpia: {sec_nr['Ticker']} ({sec_nr['Acciones']} accs a ~{sec_nr['Precio_Actual']:.2f} € = {sec_nr['Importe_EUR']:.2f} €)")
 
     # 8. Instrucciones y Ficha de Ejecución
     print("\n" + "=" * 95)
     print("INSTRUCCIONES PARA EL TRADER:")
     print("  1. Compara las dos recomendaciones anteriores y decide cuál ejecutar.")
-    print("  2. Introduce la orden a mercado en el broker de BME antes de las 17:29:50.")
-    print("  3. Puedes registrar la compra directamente a continuación pulsando [1] o [2].")
-    print("  4. Recuerda que la venta de salida se ejecutará mañana a las 09:00:01 CET a precio de Apertura.")
+    print("  2. Si la recomendación tiene alerta corporativa, puedes optar manualmente por la 2ª opción.")
+    print("  3. Introduce la orden a mercado en el broker de BME antes de las 17:29:50.")
+    print("  4. Puedes registrar la compra directamente a continuación pulsando [1], [2] o [3].")
+    print("  5. Recuerda que la venta de salida se ejecutará mañana a las 09:00:01 CET a precio de Apertura.")
     print("=" * 95)
 
     # 9. Registro Interactivo Directo en Caliente
     print("\n" + "-" * 95)
     print("¿DESEAS REGISTRAR LA COMPRA EJECUTADA AHORA MISMO?")
-    print(f"  [1] Registrar recomendación CS   --> {top_cs['Ticker']}: {top_cs['Acciones']} accs a ~{top_cs['Precio_Actual']:.2f} €")
-    print(f"  [2] Registrar recomendación NR10 --> {top_nr['Ticker']}: {top_nr['Acciones']} accs a ~{top_nr['Precio_Actual']:.2f} €")
-    print(f"  [3] Registrar manualmente otro activo / precio real")
+    cs_warn = f" [⚠️ {top_cs['Detalle_Alerta']}]" if top_cs['Riesgo_Corporativo'] else ""
+    nr_warn = f" [⚠️ {top_nr['Detalle_Alerta']}]" if top_nr['Riesgo_Corporativo'] else ""
+    print(f"  [1] Registrar recomendación CS   --> {top_cs['Ticker']}: {top_cs['Acciones']} accs a ~{top_cs['Precio_Actual']:.2f} €{cs_warn}")
+    print(f"  [2] Registrar recomendación NR10 --> {top_nr['Ticker']}: {top_nr['Acciones']} accs a ~{top_nr['Precio_Actual']:.2f} €{nr_warn}")
+    print(f"  [3] Registrar manualmente otro activo / precio real (ej: si eliges la 2ª opción limpia)")
     print(f"  [0 o Enter] Salir sin registrar por ahora")
     print("-" * 95)
     

@@ -7,6 +7,7 @@ class TradesLedger:
     """
     Gestor del libro de órdenes auditado para el concurso real de BME.
     Almacena las compras y ventas confirmadas manualmente por el usuario en 'data/live/trades_ledger.csv'.
+    """
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     LEDGER_PATH = os.path.join(PROJECT_ROOT, 'data', 'live', 'trades_ledger.csv')
     COLUMNS = ['Fecha', 'Hora', 'Accion', 'Ticker', 'Titulos', 'Precio', 'Importe_EUR', 'Semana_BME']

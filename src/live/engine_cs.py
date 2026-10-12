@@ -47,6 +47,7 @@ class EngineMicroAlfaCS:
             
             has_corp_risk = corporate_alerts.get(ticker, {}).get('has_risk', False) if corporate_alerts else False
             corp_status = corporate_alerts.get(ticker, {}).get('status_str', 'OK') if corporate_alerts else 'OK'
+            corp_detail = corporate_alerts.get(ticker, {}).get('detail', '') if corporate_alerts else ''
             
             records.append({
                 'Ticker': ticker,
@@ -59,16 +60,15 @@ class EngineMicroAlfaCS:
                 'Acciones': shares,
                 'Importe_EUR': amount_eur,
                 'Riesgo_Corporativo': has_corp_risk,
-                'Info_Corporativa': corp_status
+                'Info_Corporativa': corp_status,
+                'Detalle_Alerta': corp_detail
             })
             
         df = pd.DataFrame(records)
         
-        # Ordenación: Menor Z-Score primero (más sobrevendido).
-        # Si un activo tiene riesgo corporativo crítico, se desplaza al final.
-        df['Sort_Key'] = df.apply(lambda r: (1 if r['Riesgo_Corporativo'] else 0, r['Z_Score']), axis=1)
-        df = df.sort_values('Sort_Key').reset_index(drop=True)
-        df.drop(columns=['Sort_Key'], inplace=True)
+        # Ordenación Cuantitativa Pura: Menor Z-Score primero (más sobrevendido).
+        # Las alertas se muestran como advertencia visual sin sesgar el ranking del modelo.
+        df = df.sort_values('Z_Score').reset_index(drop=True)
         
         df.insert(0, 'Rank', range(1, len(df) + 1))
         return df

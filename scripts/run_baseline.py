@@ -109,7 +109,7 @@ for start in start_points:
 
 res_df = pd.DataFrame(results)
 
-output = f\"\"\"# RESULTADOS DEL BACKTESTER (BASELINE: CLOSE-TO-OPEN)
+output = f"""# RESULTADOS DEL BACKTESTER (BASELINE: CLOSE-TO-OPEN)
 Total de meses (ventanas de 22 días) simulados con actividad: {len(res_df)}
 
 ### MÉTRICAS PROMEDIO MENSUALES:
@@ -122,7 +122,7 @@ Total de meses (ventanas de 22 días) simulados con actividad: {len(res_df)}
 - Porcentaje de meses cerrados en positivo: {(res_df['Return'] > 0).mean()*100:.1f}%
 - Mejor mes simulado: {res_df['Return'].max()*100:.2f}%
 - Peor mes simulado: {res_df['Return'].min()*100:.2f}%
-\"\"\"
+"""
 
 with open('../docs/baseline_results.md', 'w', encoding='utf-8') as f:
     f.write(output)
