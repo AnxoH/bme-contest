@@ -53,21 +53,27 @@ class EnsembleCSNR(BaseStrategy):
                     'price_type': 'open'
                 })
                 
-        # 2. Control de Periodo de Gracia (Primeros días sin cuota obligatoria de BME)
+        # 2. Control de Periodo de Gracia y Reinicio Semanal
         window_day = getattr(portfolio, 'window_day', 99)
+        current_dt = pd.Timestamp(current_date)
+        cal_week = current_dt.isocalendar()[1]
+        
+        if window_day == 0 or getattr(self, '_current_week', None) != cal_week:
+            self._current_week = cal_week
+            self._weekly_buys = 0
+            
         if window_day < self.grace_period_days:
             return orders
                 
-        # 3. Control semanal BME (Jueves a Jueves):
-        # Compras: Lunes (0), Martes (1) y Miércoles (2) al cierre (17:29:50).
-        # Ventas: Martes, Miércoles y Jueves a la apertura (09:00:01).
-        # Jueves noche, Viernes, Sábado y Domingo: Cero operaciones (cero fin de semana).
-        current_dt = pd.Timestamp(current_date)
+        # 3. Control semanal BME (Lunes a Jueves, máximo 3 compras por semana):
+        # Opera Lunes (0), Martes (1), Miércoles (2) y Jueves (3) como salvaguarda ante festivos.
+        # Viernes (4): Cero compras siempre (cero riesgo de fin de semana).
+        # Cuando se alcanzan 3 compras en la semana, se detiene la operativa hasta la siguiente.
         day_of_week = current_dt.weekday()
-        if day_of_week not in [0, 1, 2]:
+        if day_of_week > 3 or self._weekly_buys >= 3:
             return orders
             
-        # 3. Datos históricos
+        # 4. Datos históricos
         close_df = market_data['close'].loc[:current_date]
         open_df = market_data['open'].loc[:current_date]
         high_df = market_data.get('high', close_df).loc[:current_date]
@@ -78,6 +84,7 @@ class EnsembleCSNR(BaseStrategy):
         if not avail or len(close_df) < req_window:
             if avail:
                 orders.append({'ticker': avail[0], 'action': 'buy', 'amount_eur': self.order_amount})
+                self._weekly_buys += 1
             return orders
 
         # 4. Cálculo de Factor 1: Z-Score de Reversión Intradía
@@ -134,6 +141,7 @@ class EnsembleCSNR(BaseStrategy):
             'action': 'buy',
             'amount_eur': self.order_amount
         })
+        self._weekly_buys += 1
         
         return orders
 

@@ -94,7 +94,10 @@ A continuación presentamos la tabla consolidada con las métricas clave:
     'Return_1M_Avg', 'Vol_Ann_Avg', 'Qualification_Rate'
 ]
 
-display_df = df_summary[cols_view].copy()
+# Ordenamos por Puntuación Mediana Oficial BME (la métrica robusta de competición)
+display_df = df_summary.sort_values(['Score_Median', 'Score_Avg'], ascending=[False, False])[cols_view].copy().reset_index(drop=True)
+display_df['Rank_Overall'] = range(1, len(display_df) + 1)
+
 display_df['Top3_Rate'] = (display_df['Top3_Rate'] * 100).round(2).astype(str) + '%'
 display_df['Top5_Rate'] = (display_df['Top5_Rate'] * 100).round(2).astype(str) + '%'
 display_df['Win_Rate_Global'] = (display_df['Win_Rate_Global'] * 100).round(2).astype(str) + '%'
@@ -102,7 +105,7 @@ display_df['Return_1M_Avg'] = (display_df['Return_1M_Avg'] * 100).round(2).astyp
 display_df['Vol_Ann_Avg'] = (display_df['Vol_Ann_Avg'] * 100).round(2).astype(str) + '%'
 display_df['Qualification_Rate'] = (display_df['Qualification_Rate'] * 100).round(1).astype(str) + '%'
 
-# Mostramos las 31 estrategias participantes
+# Mostramos las 31 estrategias participantes ordenadas por puntuación competitiva
 pd.set_option('display.max_rows', 35)
 display_df"""))
 

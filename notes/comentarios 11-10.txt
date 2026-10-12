@@ -11,3 +11,4 @@ y mediante un analisis del Z-score.
 - Preparar para que se ejecute
 - Calendario corporativo de evemtos durante el concurso
 - Live executor
+- ¿Como se relacionan las empresas con los mercados macro?

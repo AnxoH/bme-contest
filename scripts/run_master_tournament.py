@@ -73,10 +73,10 @@ def main():
         ConservativeBlueChipRotation(allocation_eur=2500),
         ContinuousUtilityReversion(order_amount=4667.0, window=20),
         CrossSectionalReversion(order_amount=4667.0, z_threshold=-1.0, window=20, max_weekly_trades=3),
-        EnsembleCSNR(order_amount=900.0, window_z=20, window_range=10, grace_period_days=7, name='Ensemble_CS_NR'),
+        EnsembleCSNR(order_amount=900.0, window_z=20, window_range=10, grace_period_days=5, name='Ensemble_CS_NR'),
         MeanReversionStrategy(),
-        MicroAlfaQuirurgico(order_amount=900.0, engine='cs_reversion', grace_period_days=7, name='MicroAlfa_CS'),
-        MicroAlfaQuirurgico(order_amount=900.0, engine='nr10', grace_period_days=7, name='MicroAlfa_NR10'),
+        MicroAlfaQuirurgico(order_amount=900.0, engine='cs_reversion', grace_period_days=5, name='MicroAlfa_CS'),
+        MicroAlfaQuirurgico(order_amount=900.0, engine='nr10', grace_period_days=5, name='MicroAlfa_NR10'),
         NR10Breakout(order_amount=4667.0, window=10, max_weekly_trades=3),
         PatientSniperStrategy(vol_window=60, rsi_window=14, rsi_threshold=40, base_amount=2500, snipe_amount=10000),
         OvernightQualityReversion(allocation_eur=2500, sma_period=200, min_sma_dist=1.05),
@@ -376,7 +376,7 @@ def main():
             'Qualification_Rate': qual_rate
         })
         
-    df_summary = pd.DataFrame(summary_records).sort_values('Score_Avg', ascending=False).reset_index(drop=True)
+    df_summary = pd.DataFrame(summary_records).sort_values(['Score_Median', 'Score_Avg'], ascending=[False, False]).reset_index(drop=True)
     df_summary.insert(0, 'Rank_Overall', range(1, len(df_summary) + 1))
     
     # Guardar todos los macro documentos
