@@ -298,13 +298,12 @@ BME_contest/
 │   ├── leaderboard.csv                 # Aggregate strategy leaderboard
 │   ├── master_tournament_summary.csv   # Official Master Tournament benchmark results
 │   └── logs/                           # Detailed JSON run logs per experiment
-├── notebooks/                          # Interactive Jupyter research notebooks
-│   ├── 01_eda_spanish_market.ipynb     # IBEX 35 market composition and index weight
-│   ├── 02_statistical_properties.ipynb # Day vs night variance & return distributions
-│   ├── 03_deep_quantitative_analysis.ipynb # Sector correlations & brokerage fee impact
-│   ├── 04_contest_specific_eda.ipynb   # Modeling BME fee penalty dynamics
-│   ├── 05_estrategias_sinteticas_eda.ipynb # Synthetic competitor pool prototyping
-│   └── 06_torneo_maestro_analisis_estrategias.ipynb # Master tournament mathematical analysis
+├── notebooks/                          # Interactive Jupyter quantitative research series
+│   ├── 01_mercado_y_restricciones_bme.ipynb # IBEX 35 concentration, liquidity & BME €7 fee modeling
+│   ├── 02_anomalia_overnight_y_universo_utilities.ipynb # Day vs night variance & 5 utilities low-vol basket
+│   ├── 03_motores_micro_alfa_y_eventos.ipynb # Micro-Alpha CS (Z-Score) & NR10 (Crabel) + event risk
+│   ├── 04_validacion_torneo_maestro.ipynb # Master tournament benchmark (31 agents, ~89% win rate)
+│   └── archive/                        # Preserved historical exploratory notebooks
 ├── scripts/                            # Production scripts and utilities
 │   ├── run_live_recommendation.py      # [LIVE ENGINE] Evening recommendation (17:15 CET)
 │   ├── run_morning_exit.py             # [LIVE ENGINE] Morning liquidation (09:00 CET)
