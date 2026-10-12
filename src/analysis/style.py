@@ -51,3 +51,4 @@ def set_bme_style():
 if __name__ == '__main__':
     set_bme_style()
     print("BME visual style applied successfully.")
+

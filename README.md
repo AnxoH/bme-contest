@@ -323,7 +323,8 @@ BME_contest/
 │   │   ├── backtester.py               # Rolling-window backtesting loop
 │   │   ├── portfolio.py                # Cash management, €7 min fee, T+1 tracking
 │   │   └── tracker.py                  # JSON experiment logging and leaderboard updater
-│   ├── strategies/                     # Repository of evaluated quantitative models
+│   ├── strategies/                     # Repository of evaluated quantitative models (see src/strategies/README.md)
+│   │   ├── README.md                   # Comprehensive documentation of all 21 strategies & algorithms
 │   │   ├── base.py                     # BaseStrategy abstract interface
 │   │   ├── cross_sectional_reversion.py# Micro-Alpha CS backtesting implementation
 │   │   ├── nr10_breakout.py            # Micro-Alpha NR10 backtesting implementation

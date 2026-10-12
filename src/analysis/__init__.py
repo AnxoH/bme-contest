@@ -21,3 +21,4 @@ __all__ = [
     'BME_PALETTE',
     'calculate_bme_score',
 ]
+

@@ -94,15 +94,15 @@ class CorporateEventsChecker:
             event_text = today_events.get(ticker)
             has_risk = event_text is not None
             
-            # Formatear string breve para la tabla
+            # Format concise status tag for summary tables
             short_tag = "OK"
             if has_risk:
-                if "Resultados" in event_text:
-                    short_tag = "⚠️ Resultados"
-                elif "Ex-Dividendo" in event_text:
-                    short_tag = "⚠️ Ex-Div"
+                if "Resultados" in event_text or "Earnings" in event_text:
+                    short_tag = "[WARN] Earnings"
+                elif "Ex-Dividendo" in event_text or "Ex-Div" in event_text:
+                    short_tag = "[WARN] Ex-Div"
                 else:
-                    short_tag = "⚠️ Evento"
+                    short_tag = "[WARN] Event"
                     
             alerts[ticker] = {
                 'has_risk': has_risk,
@@ -147,3 +147,15 @@ class CorporateEventsChecker:
             'active_corporate': active_corp,
             'has_corporate': len(active_corp) > 0
         }
+
+# Module-level convenience functions for quick access
+_default_checker = CorporateEventsChecker()
+
+def get_daily_macro_alerts(date_str: str = None) -> list:
+    """Return active macroeconomic alerts for date_str."""
+    return _default_checker.get_macro_alerts(date_str)
+
+def get_evening_corporate_alerts(date_str: str = None) -> dict:
+    """Return active corporate alerts for evening 17:15 CET session."""
+    return _default_checker.check_events(date_str)
+
