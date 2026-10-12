@@ -7,7 +7,7 @@
 ## 📑 Table of Contents
 1. [Executive Summary & Core Thesis](#-1-executive-summary--core-thesis)
 2. [Regulatory Framework & Quantitative Design](#-2-regulatory-framework--quantitative-design)
-   - [Official BME Scoring Asymmetry](#official-bme-scoring-asymmetry)
+   - [Official BME Scoring Asymmetry & Cross-Sectional Dependency](#official-bme-scoring-asymmetry--cross-sectional-dependency)
    - [The 5 Ultra-Low Variance Utilities Universe](#the-5-ultra-low-variance-utilities-universe)
    - [Surgical Position Sizing (€900)](#surgical-position-sizing-900)
    - [The Grace Period Exemption Clause (October 13 to 21)](#the-grace-period-exemption-clause-october-13-to-21)
@@ -17,7 +17,7 @@
 4. [Risk Calendar & Event Alert Module](#-4-risk-calendar--event-alert-module)
    - [Macroeconomic Alerts (Central Banks)](#macroeconomic-alerts-central-banks)
    - [Corporate Alerts (9M Earnings & Dividends)](#corporate-alerts-9m-earnings--dividends)
-   - [Principio of Transparency & Quantitative Integrity](#principle-of-transparency--quantitative-integrity)
+   - [Principle of Transparency & Quantitative Integrity](#principle-of-transparency--quantitative-integrity)
 5. [Live Operational Pipeline (Two-Phase Daily Cycle)](#-5-live-operational-pipeline-two-phase-daily-cycle)
    - [Daily Trading Cycle Flow](#daily-trading-cycle-flow)
    - [Evening Phase (17:15 - 17:25 CET): Signal Generation](#evening-phase-1715---1725-cet-signal-generation)
@@ -46,14 +46,66 @@ The winning paradigm, termed **Surgical Micro-Alpha**, mathematically exploits t
 
 ## ⚖️ 2. Regulatory Framework & Quantitative Design
 
-### Official BME Scoring Asymmetry
-BME's official rulebook rates portfolios on a composite score up to 9.0 points:
-$$\text{BME Score} = \text{Return Points} (0 - 6) + \text{Volatility Points} (0 - 3)$$
+### Official BME Scoring Asymmetry & Cross-Sectional Dependency
+The official BME tournament rules evaluate qualified portfolios using a dual-objective composite score bounded between $0.0$ and $9.0$ points:
 
-Where volatility points are awarded inversely proportional to the portfolio's daily standard deviation:
-$$\text{Volatility Points} = 3 \times \left(1 - \frac{\text{Vol} - \text{Min Vol}}{\text{Max Vol} - \text{Min Vol}}\right)$$
+$$\text{BME Score}_i = \text{Score}_{\text{Return}, i} + \text{Score}_{\text{Volatility}, i}$$
 
-In a one-month competition, return dispersion among active traders is narrow (~1 point spread in return score). In contrast, **capturing the full 3.0 points from low volatility** creates an insurmountable statistical edge. Active intraday portfolios accumulate variance and collapse to ~0–1 points in this category, rendering an ultra-stable strategy with neutral-to-positive return mathematically superior.
+Crucially, **neither metric is evaluated in isolation against a fixed benchmark**; both components depend dynamically on the distribution of outcomes across all competing participants in the tournament pool:
+
+#### 1. Return Component (0.0 to 6.0 points)
+Each participant's final portfolio value starting from $V_0 = €50,000$ is given by:
+
+$$V_{\text{final}, i} = V_0 \times (1 + R_i)$$
+
+BME determines the single highest final portfolio valuation achieved across all qualified participants:
+
+$$V_{\max} = \max_{j \in \text{Participants}} \{ V_{\text{final}, j} \}$$
+
+Participant $i$'s return points are awarded strictly proportional to this maximum value:
+
+$$\text{Score}_{\text{Return}, i} = 6.0 \times \frac{V_{\text{final}, i}}{V_{\max}}$$
+
+* **The Mathematical Floor Effect:** Because initial capital is large relative to single-month percentage swings, the ratio $V_{\text{final}, i} / V_{\max}$ remains remarkably close to $1.0$. Even if the tournament's most aggressive trader achieves an extraordinary $+10.0\%$ return ($V_{\max} = €55,000$) while our conservative strategy incurs a minor $-0.24\%$ loss after transaction fees ($V_{\text{final}} = €49,880$):
+
+$$\text{Score}_{\text{Return}, \text{Micro-Alfa}} = 6.0 \times \frac{49,880}{55,000} \approx 5.44 \text{ points}$$
+
+We concede a maximum deficit of only $\mathbf{6.00 - 5.44 = 0.56 \text{ points}}$ to the overall competition leader!
+
+#### 2. Volatility Component (0.0 to 3.0 points)
+Portfolio risk is measured as the annualized sample standard deviation of daily percentage portfolio changes over the 22 trading sessions:
+
+$$\sigma_i = \text{std}(R_{\text{daily}, i}) \times \sqrt{252}$$
+
+BME extracts the minimum and maximum annualized standard deviations across all qualified portfolios:
+
+$$\sigma_{\min} = \min_{j} \{ \sigma_j \}, \quad \sigma_{\max} = \max_{j} \{ \sigma_j \}$$
+
+Volatility points are awarded on a linear sliding scale inverted against portfolio risk:
+
+$$\text{Score}_{\text{Volatility}, i} = 3.0 \times \left(1 - \frac{\sigma_i - \sigma_{\min}}{\sigma_{\max} - \sigma_{\min}}\right)$$
+
+* **The Active Trader Volatility Penalty:** Active equity participants holding continuous market exposure typically register annualized standard deviations between $15\%$ and $25\%$. In a cohort where $\sigma_{\max} \approx 25\%$ and $\sigma_{\min} \approx 0.20\%$, a participant with $\sigma = 18\%$ receives:
+
+$$\text{Score}_{\text{Volatility}, \text{Active}} = 3.0 \times \left(1 - \frac{0.180 - 0.002}{0.250 - 0.002}\right) \approx 3.0 \times (1 - 0.718) = \mathbf{0.85 \text{ points}}$$
+
+In contrast, our Micro-Alfa model holds 100% cash throughout all diurnal market hours (zero price variance across 8.5 hours daily) and only holds an overnight position 3 nights a week on low-beta regulated utilities. Its annualized portfolio volatility is microscopically low ($\sigma_i \approx 0.20\% \approx \sigma_{\min}$):
+
+$$\text{Score}_{\text{Volatility}, \text{Micro-Alfa}} = 3.0 \times \left(1 - \frac{0.002 - 0.002}{0.250 - 0.002}\right) = \mathbf{3.00 \text{ points}}$$
+
+#### 3. The Net Payoff Matrix Across Participant Archetypes
+The following matrix illustrates the decisive mathematical advantage established against realistic competing profiles:
+
+| Competitor Archetype | 1M Return ($R_i$) | Final Equity ($V_i$) | Annualized Vol ($\sigma_i$) | Return Score (/6.0) | Vol Score (/3.0) | Total Score (/9.0) | Rank Profile |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Aggressive Day Trader (Leader)** | **+8.00%** | €54,000 | 25.0% ($\sigma_{\max}$) | **6.00 pts** | 0.00 pts | 6.00 pts | High Risk / Vol Collapse |
+| **Trend / Momentum Follower** | +4.00% | €52,000 | 18.0% | 5.78 pts | 0.85 pts | 6.63 pts | Mid Pack |
+| **IBEX 35 Buy & Hold** | +2.00% | €51,000 | 14.0% | 5.67 pts | 1.33 pts | 7.00 pts | Benchmark Beta |
+| **Average Contest Competitor** | -0.50% | €49,750 | 12.0% | 5.53 pts | 1.57 pts | 7.10 pts | Friction Drain |
+| **Surgical Micro-Alfa (Our Model)** | **-0.24%** | €49,880 | **0.20% ($\sigma_{\min}$)** | **5.54 pts** | **3.00 pts** | **8.54 pts** 🏆 | **Consistent Top 1-2** |
+
+> [!TIP]
+> **The Core Mathematical Conclusion:** While an aggressive leader beats our model by $\sim 0.46$ points on return, our strategy defeats that same leader by $\mathbf{+3.00 \text{ points on volatility}}$, producing a net advantage of **$+2.54$ total points**.
 
 ### The 5 Ultra-Low Variance Utilities Universe
 To minimize variance during overnight holding hours, trading is strictly restricted to the 5 major regulated Spanish utilities in the IBEX 35:
@@ -101,24 +153,40 @@ flowchart TD
 ```
 
 ### Engine 1: Micro-Alpha CS (Cross-Sectional Reversion)
-A statistical arbitrage strategy exploiting intraday mean reversion:
-1. **Intraday Return:** Measures current session performance:
+A statistical arbitrage strategy exploiting intraday mean reversion across the utilities basket:
+
+1. **Intraday Return:** Measures current session price displacement from market open:
+
    $$R_{\text{intra}, i} = \frac{P_{17:25, i} - \text{Open}_i}{\text{Open}_i}$$
-2. **Z-Score Normalization (20-day Rolling Window):**
+
+2. **Z-Score Normalization (20-Day Rolling Window):**
+
    $$Z_i = \frac{R_{\text{intra}, i} - \mu_{20, i}}{\sigma_{20, i}}$$
-   Where $\mu_{20, i}$ and $\sigma_{20, i}$ represent the historical mean and standard deviation of intraday returns over the prior 20 sessions (excluding today).
-3. **Selection Criterion:** Ranked ascending by $Z_i$. **Rank 1** corresponds to the asset exhibiting the greatest relative statistical oversold condition, maximizing probability of an elastic bounce (*mean reversion*) at next morning's market open.
+
+   Where $\mu_{20, i}$ and $\sigma_{20, i}$ represent the historical mean and standard deviation of daily intraday returns over the prior 20 sessions (excluding today).
+
+3. **Selection Criterion:** Ranked in ascending order by $Z_i$. **Rank 1** corresponds to the asset exhibiting the greatest relative statistical oversold condition, maximizing the probability of an elastic bounce (*mean reversion*) at next morning's market open.
 
 ### Engine 2: Micro-Alpha NR10 (Narrow Range 10 Compression)
-An extreme volatility contraction strategy (adapted from Toby Crabel's Narrow Range principle):
-1. **Normalized Daily Range:**
+An extreme volatility contraction strategy (adapted from Toby Crabel's classic Narrow Range principle):
+
+1. **Normalized Daily Range:** High-to-low session spread normalized by opening price:
+
    $$\text{Range}_{t, i} = \frac{\text{High}_{t, i} - \text{Low}_{t, i}}{\text{Open}_{t, i}}$$
-2. **NR10 Contraction Ratio:**
-   $$\text{Ratio\_NR}_i = \frac{\text{Range}_{t, i}}{\overline{\text{Range}}_{10d, i}}$$
-3. **Directional Support Filter:** Evaluates current price position within the daily range:
+
+2. **NR10 Contraction Ratio:** Compares today's range against the 10-day historical moving average:
+
+   $$\text{NR\_Ratio}_i = \frac{\text{Range}_{t, i}}{\mu_{\text{Range}, 10d, i}}$$
+
+3. **Directional Support Filter:** Price location within the daily session spread:
+
    $$\text{Pos\_Range}_i = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
-   Assets located in the lower half ($\text{Pos\_Range}_i \le 0.50$) are prioritized.
-4. **Selection Criterion:** Primary sort prioritizes lower-half placement (support consolidation); secondary sort selects the **lowest Ratio_NR**. Extreme volatility compression forecasts an upward directional expansion at next morning's open.
+
+   Assets consolidated in the lower half ($\text{Pos\_Range}_i \le 0.50$) near support are prioritized.
+
+4. **Selection Criterion:**
+   * **Primary criterion:** Prioritize assets consolidated in the lower half of their range ($\text{Pos\_Range}_i \le 0.50$).
+   * **Secondary criterion:** Lowest $\text{NR\_Ratio}_i$ (maximum volatility contraction). Extreme range contraction forecasts an elastic upward expansion at the next morning's market open.
 
 ---
 
