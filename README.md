@@ -1,341 +1,341 @@
 # BME Algorithmic Trading Contest Framework & Live Execution Engine
-> **Concurso de Inversión de Bolsa de Madrid (BME) — Octubre / Noviembre 2026**  
-> *Arquitectura Cuantitativa, Motor de Simulación Rodante y Sistema Operativo de Recomendación en Tiempo Real.*
+> **Madrid Stock Exchange (Bolsa de Madrid - BME) Investment Competition — October / November 2026**  
+> *Quantitative Architecture, Rolling Simulation Engine, and Real-Time Production Execution System.*
 
 ---
 
-## 📑 Tabla de Contenidos
-1. [Resumen Ejecutivo y Tesis Central](#-1-resumen-ejecutivo-y-tesis-central)
-2. [Fundamentos Normativos y Diseño Cuantitativo](#-2-fundamentos-normativos-y-diseño-cuantitativo)
-   - [La Asimetría de la Puntuación Oficial BME](#la-asimetría-de-la-puntuación-oficial-bme)
-   - [El Universo de 5 Utilities de Ultra-Baja Varianza](#el-universo-de-5-utilities-de-ultra-baja-varianza)
-   - [Sizing Quirúrgico (900 €)](#sizing-quirúrgico-900-)
-   - [La Cláusula del Periodo de Gracia (13 al 21 de Octubre)](#la-cláusula-del-periodo-de-gracia-13-al-21-de-octubre)
-3. [Las Dos Estrategias Cuantitativas en Vivo](#-3-las-dos-estrategias-cuantitativas-en-vivo)
-   - [Motor 1: Micro-Alfa CS (Cross-Sectional Reversion)](#motor-1-micro-alfa-cs-cross-sectional-reversion)
-   - [Motor 2: Micro-Alfa NR10 (Narrow Range 10 Compression)](#motor-2-micro-alfa-nr10-narrow-range-10-compression)
-4. [Módulo de Calendario y Alertas de Riesgo](#-4-módulo-de-calendario-y-alertas-de-riesgo)
-   - [Alertas Macroeconómicas (Bancos Centrales)](#alertas-macroeconómicas-bancos-centrales)
-   - [Alertas Corporativas (Resultados 9M y Dividendos)](#alertas-corporativas-resultados-9m-y-dividendos)
-   - [Principio de Transparencia y No Alteración Cuantitativa](#principio-de-transparencia-y-no-alteración-cuantitativa)
-5. [Pipeline Operativo en Vivo (Ciclo Diario de 2 Fases)](#-5-pipeline-operativo-en-vivo-ciclo-diario-de-2-fases)
-   - [Flujo del Ciclo Diario](#flujo-del-ciclo-diario)
-   - [Fase Vespertina (17:15 - 17:25 CET): Generación de Señales](#fase-vespertina-1715---1725-cet-generación-de-señales)
-   - [Fase Matinal (09:00:01 CET): Liquidación de Posición](#fase-matinal-090001-cet-liquidación-de-posición)
-   - [Automatización con Windows Task Scheduler](#automatización-con-windows-task-scheduler)
-6. [Estructura Real del Repositorio](#-6-estructura-real-del-repositorio)
-7. [Módulo de Investigación y Torneo Maestro](#-7-módulo-de-investigación-y-torneo-maestro)
-   - [Metodología de Ventanas Rodantes de 22 Días](#metodología-de-ventanas-rodantes-de-22-días)
-   - [Pool de 31 Competidores Sintéticos y Resultados](#pool-de-31-competidores-sintéticos-y-resultados)
-8. [Cheat Sheet: Guía Rápida de Comandos](#-8-cheat-sheet-guía-rápida-de-comandos)
+## 📑 Table of Contents
+1. [Executive Summary & Core Thesis](#-1-executive-summary--core-thesis)
+2. [Regulatory Framework & Quantitative Design](#-2-regulatory-framework--quantitative-design)
+   - [Official BME Scoring Asymmetry](#official-bme-scoring-asymmetry)
+   - [The 5 Ultra-Low Variance Utilities Universe](#the-5-ultra-low-variance-utilities-universe)
+   - [Surgical Position Sizing (€900)](#surgical-position-sizing-900)
+   - [The Grace Period Exemption Clause (October 13 to 21)](#the-grace-period-exemption-clause-october-13-to-21)
+3. [The Two Live Quantitative Strategies](#-3-the-two-live-quantitative-strategies)
+   - [Engine 1: Micro-Alpha CS (Cross-Sectional Reversion)](#engine-1-micro-alpha-cs-cross-sectional-reversion)
+   - [Engine 2: Micro-Alpha NR10 (Narrow Range 10 Compression)](#engine-2-micro-alpha-nr10-narrow-range-10-compression)
+4. [Risk Calendar & Event Alert Module](#-4-risk-calendar--event-alert-module)
+   - [Macroeconomic Alerts (Central Banks)](#macroeconomic-alerts-central-banks)
+   - [Corporate Alerts (9M Earnings & Dividends)](#corporate-alerts-9m-earnings--dividends)
+   - [Principio of Transparency & Quantitative Integrity](#principle-of-transparency--quantitative-integrity)
+5. [Live Operational Pipeline (Two-Phase Daily Cycle)](#-5-live-operational-pipeline-two-phase-daily-cycle)
+   - [Daily Trading Cycle Flow](#daily-trading-cycle-flow)
+   - [Evening Phase (17:15 - 17:25 CET): Signal Generation](#evening-phase-1715---1725-cet-signal-generation)
+   - [Morning Phase (09:00:01 CET): Position Liquidation](#morning-phase-090001-cet-position-liquidation)
+   - [Automation via Windows Task Scheduler](#automation-via-windows-task-scheduler)
+6. [Repository Structure](#-6-repository-structure)
+7. [Research Module & Master Tournament](#-7-research-module--master-tournament)
+   - [22-Day Rolling Window Methodology](#22-day-rolling-window-methodology)
+   - [Pool of 31 Synthetic Competitors & Results](#pool-of-31-synthetic-competitors--results)
+8. [Cheat Sheet: Quick Command Guide](#-8-cheat-sheet-quick-command-guide)
 
 ---
 
-## 🎯 1. Resumen Ejecutivo y Tesis Central
+## 🎯 1. Executive Summary & Core Thesis
 
-Este repositorio alberga tanto la **infraestructura de backtesting y análisis cuantitativo** como el **motor de decisión y ejecución en vivo** diseñado específicamente para maximizar la probabilidad de victoria en el Concurso Oficial de Bolsa de BME.
+This repository hosts both the **quantitative research & backtesting framework** and the **real-time live decision and execution engine** engineered specifically to maximize win probability in the official BME Stock Trading Competition.
 
-Tras evaluar más de 15 estrategias cuantitativas sobre 15 años de historia del mercado continuo español (IBEX 35) mediante simulación de Monte Carlo y ventanas rodantes mensuales frente a un pool realista de competidores, se demostró que el trading intradiario tradicional pierde sistemáticamente debido a los costes fijos de intermediación (mínimo de 7 € por operación) y a la volatilidad diurna acumulada.
+Evaluating over 15 quantitative strategies across 15 years of Spanish continuous market history (IBEX 35) via Monte Carlo simulations and 22-day rolling windows against a realistic pool of market participants demonstrated that traditional intraday trading loses systematically due to brokerage fee structures (minimum €7 fixed fee per trade) and diurnal market volatility.
 
-La solución ganadora, denominada **Micro-Alfa Quirúrgico**, explota la asimetría matemática del reglamento de BME:
-* Mantiene la cartera **100% en liquidez** durante la jornada regular (8 horas y media de mercado continuo), asegurando una **volatilidad de cartera de apenas ~0.20% anualizada** (frente al >10-15% del mercado general).
-* Opera estrictamente en **régimen Overnight T+1**: compra a las 17:29:50 CET (antes de la subasta de cierre) y liquida a las 09:00:01 CET (precio oficial de apertura).
-* Cumple rigurosamente con los requisitos regulatorios de volumen y rotación mediante el capital estrictamente necesario (**900 € por orden**, 3 veces por semana).
+The winning paradigm, termed **Surgical Micro-Alpha**, mathematically exploits the asymmetric payoff embedded in BME's rules:
+* Maintains the portfolio **100% in cash (liquidity)** during regular market hours (8.5 hours of continuous trading), locking in an ultra-low annualized portfolio volatility of **~0.20%** (versus >10–15% for typical market participants).
+* Executes strictly in an **Overnight T+1 regime**: buys at 17:29:50 CET (prior to the closing auction) and liquidates at 09:00:01 CET (official market open auction price).
+* Satisfies all regulatory turnover constraints with surgical capital allocation (**€900 per trade**, exactly 3 times per week).
 
 ---
 
-## ⚖️ 2. Fundamentos Normativos y Diseño Cuantitativo
+## ⚖️ 2. Regulatory Framework & Quantitative Design
 
-### La Asimetría de la Puntuación Oficial BME
-El reglamento oficial de BME califica a los participantes según un índice compuesto de hasta 9 puntos posibles:
-$$\text{Score BME} = \text{Puntos Retorno} (0 - 6) + \text{Puntos Volatilidad} (0 - 3)$$
+### Official BME Scoring Asymmetry
+BME's official rulebook rates portfolios on a composite score up to 9.0 points:
+$$\text{BME Score} = \text{Return Points} (0 - 6) + \text{Volatility Points} (0 - 3)$$
 
-Donde los puntos de volatilidad se asignan de forma inversa a la desviación estándar diaria de la cartera:
-$$\text{Puntos Volatilidad} = 3 \times \left(1 - \frac{\text{Vol} - \text{Min Vol}}{\text{Max Vol} - \text{Min Vol}}\right)$$
+Where volatility points are awarded inversely proportional to the portfolio's daily standard deviation:
+$$\text{Volatility Points} = 3 \times \left(1 - \frac{\text{Vol} - \text{Min Vol}}{\text{Max Vol} - \text{Min Vol}}\right)$$
 
-Mientras que en el concurso mensual la dispersión de rentabilidad entre carteras suele ser estrecha (~1 punto de diferencia en el score de retorno), **conseguir los 3.0 puntos enteros de baja volatilidad** otorga una ventaja insalvable. Una cartera activa que opere de día acumula volatilidad y cae a ~0-1 puntos en este bloque, haciendo que una estrategia ultra-estable con retorno ligeramente neutro o positivo sea matemáticamente imbatible.
+In a one-month competition, return dispersion among active traders is narrow (~1 point spread in return score). In contrast, **capturing the full 3.0 points from low volatility** creates an insurmountable statistical edge. Active intraday portfolios accumulate variance and collapse to ~0–1 points in this category, rendering an ultra-stable strategy with neutral-to-positive return mathematically superior.
 
-### El Universo de 5 Utilities de Ultra-Baja Varianza
-Para minimizar aún más la varianza en las horas overnight, la operativa se restringe a las 5 grandes empresas de servicios públicos reguladas del IBEX 35:
+### The 5 Ultra-Low Variance Utilities Universe
+To minimize variance during overnight holding hours, trading is strictly restricted to the 5 major regulated Spanish utilities in the IBEX 35:
 $$\mathcal{U} = \{\text{RED.MC (Redeia)}, \text{ENG.MC (Enagás)}, \text{ELE.MC (Endesa)}, \text{IBE.MC (Iberdrola)}, \text{NTGY.MC (Naturgy)}\}$$
 
-Estas compañías presentan:
-1. Máxima liquidez y profundidad de libro en subastas de apertura y cierre.
-2. Ingresos regulados por marcos estatales, reduciendo el riesgo de gaps extremos no anticipados.
-3. Propiedad de reversión a la media intradía y nocturna altamente predecible.
+These assets feature:
+1. Institutional liquidity and order book depth in opening and closing auctions.
+2. Revenues bounded by state regulatory frameworks, curtailing unpredictable overnight tail risks.
+3. Pronounced mean-reversion characteristics between intraday dislocations and subsequent market open prices.
 
-### Sizing Quirúrgico (900 €)
-* **Requisito BME:** Ejecutar un mínimo de 3 operaciones de compra semanales (semanas de cierre de jueves a cierre de jueves) acumulando al menos 2.500 € en compras.
-* **El riesgo del umbral estricto (834 €):** Al comprar títulos enteros discretos ($\text{acciones} = \lfloor 833.34 / P \rfloor$), las variaciones de precio solían dejar el volumen total de la semana en valores marginalmente inferiores (ej. 2.470 €), provocando la descalificación inmediata.
-* **Solución (900 € por orden):** 3 compras de 900 € suman exactamente **2.700 €** (> 2.500 € requeridos), dejando un margen de seguridad amplio ante cualquier fluctuación de cotización, manteniendo a la vez el **98.2% de la cuenta en liquidez pura (efectivo con varianza cero)**.
+### Surgical Position Sizing (€900)
+* **BME Mandate:** Execute at least 3 buy trades per week (running from Thursday close to Thursday close), accumulating at least €2,500 in weekly buy volume.
+* **The Pitfall of the Strict Minimum (€834):** Purchasing whole discrete shares ($\text{shares} = \lfloor 833.34 / P \rfloor$) often resulted in weekly volumes falling slightly short due to price truncation (e.g., €2,470), triggering immediate disqualification.
+* **The €900 Solution:** 3 purchases of €900 consistently yield **€2,700** (exceeding the €2,500 requirement with a safety cushion), while keeping **98.2% of total capital in risk-free cash (zero variance)**.
 
-### La Cláusula del Periodo de Gracia (13 al 21 de Octubre)
-Las bases de BME establecen que las 3 semanas de cumplimiento obligatorio de volumen comienzan el **22 de octubre**:
-* **Semana 1:** 22 de octubre a 29 de octubre.
-* **Semana 2:** 29 de octubre a 5 de noviembre.
-* **Semana 3:** 5 de noviembre a 12 de noviembre.
+### The Grace Period Exemption Clause (October 13 to 21)
+BME's official rules state that the 3 mandatory volume compliance weeks begin on **October 22**:
+* **Week 1:** October 22 to October 29.
+* **Week 2:** October 29 to November 5.
+* **Week 3:** November 5 to November 12.
 
-Durante los primeros 7 días hábiles (del 13 al 21 de octubre), el concurso no exige cuota mínima. La estrategia permanece **100% en liquidez** durante este periodo:
-* **0.00% de volatilidad** acumulada y **0.00% de drawdown**.
-* Ahorro directo de más de 42 € en comisiones de compra/venta.
-* Aislamiento de los primeros gaps de resultados corporativos del trimestre (Enagás e Iberdrola).
+During the first 7 trading days (October 13 to 21), no minimum trading volume is enforced. The portfolio remains **100% in cash**:
+* **0.00% volatility** and **0.00% drawdown** during the first week.
+* Direct savings of over €42 in transaction fees.
+* Immunity against opening gaps from early quarterly earnings releases (Enagás and Iberdrola).
 
 ---
 
-## 🧠 3. Las Dos Estrategias Cuantitativas en Vivo
+## 🧠 3. The Two Live Quantitative Strategies
 
-A las 17:15 CET, el sistema ejecuta dos algoritmos paralelos independientes sobre las 5 utilities. El usuario visualiza ambas clasificaciones en pantalla y toma la decisión final de ejecución manual.
+At 17:15 CET, the system evaluates two independent algorithms across the 5 utilities. Both rankings are displayed side-by-side, allowing the trader to execute the preferred signal manually.
 
 ```mermaid
 flowchart TD
-    A[Universo 5 Utilities] --> B{17:15 CET: Snapshot en Vivo}
-    B --> C[Motor 1: Micro-Alfa CS]
-    B --> D[Motor 2: Micro-Alfa NR10]
-    C --> E[Z-Score Intradía 20d]
-    D --> F[Compresión NR10 + Posición <= 50%]
-    E --> G[Ranking CS: Menor Z-Score]
-    F --> H[Ranking NR10: Menor Ratio NR]
-    G --> I[Pantalla Dual con Alertas de Riesgo]
+    A[5 Utilities Universe] --> B{17:15 CET: Real-Time Snapshot}
+    B --> C[Engine 1: Micro-Alpha CS]
+    B --> D[Engine 2: Micro-Alpha NR10]
+    C --> E[20d Intraday Z-Score]
+    D --> F[NR10 Compression + Pos in Range <= 50%]
+    E --> G[CS Ranking: Lowest Z-Score]
+    F --> H[NR10 Ranking: Lowest NR Ratio]
+    G --> I[Dual Screen with Risk Alerts]
     H --> I
-    I --> J[Trader Selecciona 1 o 2]
+    I --> J[Trader Selects Model 1 or 2]
 ```
 
-### Motor 1: Micro-Alfa CS (Cross-Sectional Reversion)
-Estrategia de arbitraje estadístico de reversión a la media intradía:
-1. **Retorno Intradía:** Se calcula el rendimiento de la sesión actual:
+### Engine 1: Micro-Alpha CS (Cross-Sectional Reversion)
+A statistical arbitrage strategy exploiting intraday mean reversion:
+1. **Intraday Return:** Measures current session performance:
    $$R_{\text{intra}, i} = \frac{P_{17:25, i} - \text{Open}_i}{\text{Open}_i}$$
-2. **Normalización por Z-Score (Ventana de 20 días):**
+2. **Z-Score Normalization (20-day Rolling Window):**
    $$Z_i = \frac{R_{\text{intra}, i} - \mu_{20, i}}{\sigma_{20, i}}$$
-   Donde $\mu_{20, i}$ y $\sigma_{20, i}$ son la media y desviación estándar de los retornos intradía de las 20 sesiones anteriores (excluyendo hoy).
-3. **Criterio de Selección:** Se ordena de menor a mayor $Z_i$. El activo en **Rank 1** es aquel que ha experimentado la mayor sobreventa estadística relativa, maximizando la probabilidad de un rebote elástico (*mean reversion*) en la apertura de la mañana siguiente.
+   Where $\mu_{20, i}$ and $\sigma_{20, i}$ represent the historical mean and standard deviation of intraday returns over the prior 20 sessions (excluding today).
+3. **Selection Criterion:** Ranked ascending by $Z_i$. **Rank 1** corresponds to the asset exhibiting the greatest relative statistical oversold condition, maximizing probability of an elastic bounce (*mean reversion*) at next morning's market open.
 
-### Motor 2: Micro-Alfa NR10 (Narrow Range 10 Compression)
-Estrategia basada en compresión extrema de volatilidad intradiaria (concepto Narrow Range de Toby Crabel adaptado):
-1. **Rango Intradía Normalizado:**
+### Engine 2: Micro-Alpha NR10 (Narrow Range 10 Compression)
+An extreme volatility contraction strategy (adapted from Toby Crabel's Narrow Range principle):
+1. **Normalized Daily Range:**
    $$\text{Range}_{t, i} = \frac{\text{High}_{t, i} - \text{Low}_{t, i}}{\text{Open}_{t, i}}$$
-2. **Ratio de Contracción NR10:**
+2. **NR10 Contraction Ratio:**
    $$\text{Ratio\_NR}_i = \frac{\text{Range}_{t, i}}{\overline{\text{Range}}_{10d, i}}$$
-3. **Filtro Direccional de Soporte:** Calcula la posición del precio actual dentro del rango diario:
+3. **Directional Support Filter:** Evaluates current price position within the daily range:
    $$\text{Pos\_Range}_i = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
-   Prioriza activos situados en la mitad inferior ($\text{Pos\_Range}_i \le 0.50$).
-4. **Criterio de Selección:** Se ordena en primer lugar por estar en la mitad inferior (cerca del soporte del día) y en segundo lugar por **menor Ratio_NR**. La compresión extrema predice una expansión direccional al alza en la apertura siguiente.
+   Assets located in the lower half ($\text{Pos\_Range}_i \le 0.50$) are prioritized.
+4. **Selection Criterion:** Primary sort prioritizes lower-half placement (support consolidation); secondary sort selects the **lowest Ratio_NR**. Extreme volatility compression forecasts an upward directional expansion at next morning's open.
 
 ---
 
-## 📅 4. Módulo de Calendario y Alertas de Riesgo
+## 📅 4. Risk Calendar & Event Alert Module
 
-El módulo `src/live/corporate_events.py` contiene de forma estática e in-memory el calendario oficial de eventos críticos del certamen (13 de octubre a 12 de noviembre de 2026).
+The `src/live/corporate_events.py` module maintains an in-memory calendar of all critical competition events (October 13 to November 12, 2026).
 
-### Alertas Macroeconómicas (Bancos Centrales)
-Se muestran en banners destacados en la sesión correspondiente para advertir sobre volatilidad general de deuda:
-* **29 de Octubre:** BCE — Decisión de Tipos (14:15h CET) y Rueda de Prensa (14:45h CET).
-* **04 de Noviembre:** FED — Decisión de Tipos en EEUU (20:00h CET).
-* **05 de Noviembre:** BoE — Decisión de Tipos en UK (13:00h CET, riesgo directo para Iberdrola).
+### Macroeconomic Alerts (Central Banks)
+Prominently surfaced in the terminal header on announcement days to warn of sector-wide debt volatility:
+* **October 29:** ECB — Interest Rate Decision (14:15 CET) & Press Conference (14:45 CET).
+* **November 4:** US FED — Interest Rate Decision (20:00 CET).
+* **November 5:** Bank of England — Rate Decision (13:00 CET, direct directional risk for Iberdrola).
 
-### Alertas Corporativas (Resultados 9M y Dividendos)
-Si una utility presenta resultados antes de la apertura (BMO - 08:30h), mantener una posición overnight la noche previa ($T-1$) expone la cartera a un gap severo a las 09:00:
-* **19 Oct (17:15):** Enagás (`ENG.MC`) presenta resultados el martes 20 BMO.
-* **20 Oct (17:15):** Iberdrola (`IBE.MC`) presenta resultados el miércoles 21 BMO.
-* **27 Oct (17:15):** Redeia (`RED.MC`) presenta resultados el miércoles 28 BMO.
-* **29 Oct (17:15):** Naturgy (`NTGY.MC`) presenta resultados el viernes 30 BMO.
-* **02 Nov (17:15):** Endesa (`ELE.MC`) presenta resultados el martes 3 BMO.
-* **04 Nov (17:15):** Naturgy (`NTGY.MC`) descuenta dividendo a cuenta el jueves 5 nov (riesgo de descuento automático de precio).
+### Corporate Alerts (9M Earnings & Dividends)
+When a utility releases earnings before market open (BMO - 08:30 CET), holding an overnight position on the eve ($T-1$) exposes capital to severe opening gaps:
+* **Oct 19 (17:15):** Enagás (`ENG.MC`) reports Oct 20 BMO.
+* **Oct 20 (17:15):** Iberdrola (`IBE.MC`) reports Oct 21 BMO.
+* **Oct 27 (17:15):** Redeia (`RED.MC`) reports Oct 28 BMO.
+* **Oct 29 (17:15):** Naturgy (`NTGY.MC`) reports Oct 30 BMO.
+* **Nov 02 (17:15):** Endesa (`ELE.MC`) reports Nov 3 BMO.
+* **Nov 04 (17:15):** Naturgy (`NTGY.MC`) trades ex-dividend Nov 5 (automatic stock price markdown risk).
 
-### Principio de Transparencia y No Alteración Cuantitativa
+### Principle of Transparency & Quantitative Integrity
 > [!IMPORTANT]
-> **El modelo cuantitativo jamás altera ni sesga el ranking matemático por motivos de calendario.**  
-> Si `RED.MC` es el activo con menor Z-Score, aparecerá en el puesto **1º de la tabla CS**. Sin embargo, el sistema añadirá la etiqueta `⚠️ Resultados` en su fila, emitirá un aviso descriptivo y recomendará cuál sería la **2ª opción limpia**. El trader mantiene la soberanía absoluta para decidir si ejecutar el 1º o rotar al 2º.
+> **The quantitative model never modifies mathematical rankings due to calendar events.**  
+> If `RED.MC` exhibits the lowest Z-Score, it stays in **1st place in the CS table**. However, the terminal highlights it with a `⚠️ Resultados` badge, generates a descriptive alert banner, and recommends the **clean 2nd-place alternative**. The trader retains full discretion to execute the 1st or rotate to the 2nd.
 
 ---
 
-## 🔄 5. Pipeline Operativo en Vivo (Ciclo Diario de 2 Fases)
+## 🔄 5. Live Operational Pipeline (Two-Phase Daily Cycle)
 
-### Flujo del Ciclo Diario
+### Daily Trading Cycle Flow
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Trader as Trader (Usuario)
-    participant Eve as Tarea Tarde (17:15 CET)
-    participant Broker as Broker Oficial BME
+    actor Trader as Trader (User)
+    participant Eve as Evening Task (17:15 CET)
+    participant Broker as Official BME Broker
     participant Led as Ledger (trades_ledger.csv)
-    participant Morn as Tarea Mañana (09:00 CET)
+    participant Morn as Morning Task (09:00 CET)
 
-    Note over Eve: Lunes a Jueves a las 17:15 CET
-    Eve->>Eve: Audita cuota semanal (X de 3 compras, Volumen €)
-    Eve->>Eve: Ingesta precios en vivo Yahoo Finance fast_info (<2s)
-    Eve->>Trader: Muestra alertas de riesgo + Rankings CS y NR10
-    Trader->>Broker: Introduce orden de COMPRA a mercado (~900 €) antes de 17:29:50
-    Trader->>Eve: Pulsa [1], [2] o [3] en terminal para confirmar compra
-    Eve->>Led: Registra BUY en data/live/trades_ledger.csv
+    Note over Eve: Monday to Thursday at 17:15 CET
+    Eve->>Eve: Audits weekly quota (X of 3 buys, € Volume)
+    Eve->>Eve: Ingests real-time Yahoo Finance fast_info (<2s)
+    Eve->>Trader: Displays risk alerts + CS & NR10 Rankings
+    Trader->>Broker: Enters market BUY order (~€900) before 17:29:50
+    Trader->>Eve: Presses [1], [2] or [3] in terminal to confirm trade
+    Eve->>Led: Logs BUY in data/live/trades_ledger.csv
 
-    Note over Morn: Martes a Viernes a las 09:00 CET
-    Morn->>Led: Detecta posición abierta del día anterior
-    Morn->>Morn: Descarga precio oficial de apertura (Open) y calcula P&L
-    Morn->>Trader: Ventana de aviso: ¡Orden obligatoria de venta T+1!
-    Trader->>Broker: Introduce orden de VENTA a mercado a las 09:00:01
-    Trader->>Morn: Pulsa [Enter] para confirmar precio de venta
-    Morn->>Led: Registra SELL y devuelve la cartera a 100% Liquidez
+    Note over Morn: Tuesday to Friday at 09:00 CET
+    Morn->>Led: Detects open position from previous session
+    Morn->>Morn: Fetches official opening price (Open) & computes P&L
+    Morn->>Trader: Warning modal: Mandatory T+1 sell order!
+    Trader->>Broker: Enters market SELL order at 09:00:01
+    Trader->>Morn: Presses [Enter] to confirm execution price
+    Morn->>Led: Logs SELL and restores portfolio to 100% Cash
 ```
 
-### Fase Vespertina (17:15 - 17:25 CET): Generación de Señales
-Ejecutada mediante `python scripts/run_live_recommendation.py`:
-1. **Auditoría Semanal:** Comprueba cuántas compras se han realizado en la semana BME en curso (jueves a jueves) y el volumen acumulado.
-2. **Snapshot en Vivo:** Conexión ultrarrápida a Yahoo Finance (<2s) vía `Ticker.fast_info` para las 5 utilities.
-3. **Banners de Alerta:** Muestra avisos macro o de eventos corporativos para la sesión.
-4. **Tablas de Decisión Duales:** Despliega los rankings de Micro-Alfa CS y Micro-Alfa NR10 lado a lado.
-5. **Registro Directo:** Permite teclear `1`, `2` o `3` en caliente para registrar la compra en el libro oficial.
+### Evening Phase (17:15 - 17:25 CET): Signal Generation
+Triggered by `python scripts/run_live_recommendation.py`:
+1. **Weekly Quota Audit:** Verifies completed buys for the current BME week (Thursday-to-Thursday) and accumulated buy volume.
+2. **Real-Time Snapshot:** Fast connection (<2s) via `Ticker.fast_info` for all 5 utilities.
+3. **Alert Banners:** Surfacing central bank and corporate events.
+4. **Dual Decision Tables:** Side-by-side rankings for Micro-Alpha CS and Micro-Alpha NR10.
+5. **Interactive Logging:** Keys `1`, `2`, or `3` log the trade directly into the audited ledger.
 
-### Fase Matinal (09:00:01 CET): Liquidación de Posición
-Ejecutada mediante `python scripts/run_morning_exit.py`:
-1. **Auditoría de Posición:** Si no hay compras activas, confirma estado de 100% liquidez y se cierra.
-2. **Precio de Apertura en Vivo:** Si hay una posición abierta, consulta el precio de apertura de la subasta (`09:00:01`).
-3. **Cálculo de P&L:** Muestra el beneficio/pérdida estimado en euros y en porcentaje.
-4. **Registro de Venta:** Solicita confirmación del precio real ejecutado y deja la cartera en 100% liquidez.
+### Morning Phase (09:00:01 CET): Position Liquidation
+Triggered by `python scripts/run_morning_exit.py`:
+1. **Position Audit:** If no open trade exists, confirms 100% cash and closes.
+2. **Opening Price Fetch:** If a trade is active, queries the official opening auction price (`09:00:01`).
+3. **P&L Computation:** Displays estimated profit/loss in euros and percentage.
+4. **Execution Confirmation:** Prompts for executed price and updates portfolio back to 100% liquidity.
 
-### Automatización con Windows Task Scheduler
-El script [`scripts/setup_task_scheduler.ps1`](file:///d:/Escritorio/Profesional/BME%20contest/scripts/setup_task_scheduler.ps1) registra automáticamente ambas tareas en el Programador de Tareas de Windows para que se abran en pantalla sin necesidad de recordatorios:
-* **`BME_Contest_EveningBuy`:** Se abre de **Lunes a Jueves a las 17:15 CET**.
-* **`BME_Contest_MorningSell`:** Se abre de **Martes a Viernes a las 09:00 CET**.
+### Automation via Windows Task Scheduler
+The script [`scripts/setup_task_scheduler.ps1`](file:///d:/Escritorio/Profesional/BME%20contest/scripts/setup_task_scheduler.ps1) automatically registers both tasks in Windows Task Scheduler:
+* **`BME_Contest_EveningBuy`:** Pops up **Monday through Thursday at 17:15 CET**.
+* **`BME_Contest_MorningSell`:** Pops up **Tuesday through Friday at 09:00 CET**.
 
 ---
 
-## 📂 6. Estructura Real del Repositorio
+## 📂 6. Repository Structure
 
 ```text
 BME_contest/
-├── data/                               # Almacenamiento de datos
-│   ├── live/                           # Datos de operativa en tiempo real
-│   │   └── trades_ledger.csv           # Libro contable oficial auditado (BUY/SELL, precios, semana BME)
-│   ├── processed/                      # Series procesadas para backtesting
-│   │   └── competitors_returns.csv     # Matriz de retornos de los 31 competidores sintéticos
-│   └── raw/                            # Datos históricos brutos (OHLCV 15 años IBEX 35 y composición)
+├── data/                               # Data storage
+│   ├── live/                           # Live trading execution data
+│   │   └── trades_ledger.csv           # Official audited ledger (BUY/SELL, prices, BME week)
+│   ├── processed/                      # Preprocessed series for backtesting
+│   │   └── competitors_returns.csv     # Return matrix of 31 synthetic competitors
+│   └── raw/                            # 15-year raw IBEX 35 OHLCV market history
 │       ├── stocks_close_15y.csv
 │       ├── stocks_open_15y.csv
 │       ├── stocks_high_15y.csv
 │       ├── stocks_low_15y.csv
 │       └── stocks_volume_15y.csv
-├── docs/                               # Documentación estratégica y conclusiones
-│   ├── CONTEXT.md                      # Contexto normativo del certamen BME
-│   ├── DESIGN_DECISIONS.md             # Registro de decisiones de arquitectura cuantitativa
-│   ├── EDA_CONCLUSIONS.md              # Hallazgos del análisis exploratorio del mercado español
-│   └── ESTRATEGIA_FINAL_Y_CALENDARIO.md # Manual táctico completo con fechas de actuación
-├── experiments/                        # Registro de simulaciones y torneos
-│   ├── leaderboard.csv                 # Ranking agregado de estrategias
-│   ├── master_tournament_summary.csv   # Resultados oficiales del Torneo Maestro de 31 participantes
-│   └── logs/                           # Ficheros JSON detallados de cada corrida experimental
-├── notebooks/                          # Cuadernos interactivos Jupyter (Investigación EDA)
-│   ├── 01_eda_spanish_market.ipynb     # Composición y estructura del IBEX 35
-│   ├── 02_statistical_properties.ipynb # Varianza diurna vs nocturna y colas de distribución
-│   ├── 03_deep_quantitative_analysis.ipynb # Correlaciones sectoriales y costes de intermediación
-│   ├── 04_contest_specific_eda.ipynb   # Modelado del impacto de las comisiones de BME
-│   ├── 05_estrategias_sinteticas_eda.ipynb # Simulación preliminar de competidores
-│   └── 06_torneo_maestro_analisis_estrategias.ipynb # Descomposición matemática del torneo de 31 agentes
-├── scripts/                            # Puntos de entrada ejecutables y herramientas de soporte
-│   ├── run_live_recommendation.py      # [MOTOR EN VIVO] Recomendación vespertina (17:15 CET)
-│   ├── run_morning_exit.py             # [MOTOR EN VIVO] Liquidación en apertura matinal (09:00 CET)
-│   ├── log_trade.py                    # CLI de gestión manual y auditoría del libro contable
-│   ├── setup_task_scheduler.ps1        # Script PowerShell para programar las tareas en Windows
-│   ├── run_master_tournament.py        # Ejecutor del torneo masivo de 31 estrategias
-│   ├── generate_competitors_realistic.py # Generador del pool de competidores sintéticos
-│   └── download_data.py                # Descargador histórico de cotizaciones de Yahoo Finance
-├── src/                                # Código fuente modular del framework
-│   ├── live/                           # Módulos del motor de decisión en tiempo real
-│   │   ├── corporate_events.py         # Calendario estático de riesgo macro y corporativo
-│   │   ├── data_feed.py                # Conector de datos en tiempo real (fast_info <2s)
-│   │   ├── engine_cs.py                # Algoritmo cuantitativo Micro-Alfa CS (Z-Score 20d)
-│   │   ├── engine_nr.py                # Algoritmo cuantitativo Micro-Alfa NR10 (Compresión de rango)
-│   │   └── ledger.py                   # Lógica de gestión y validación del trades_ledger.csv
-│   ├── engine/                         # Motor de simulación y backtesting histórico
-│   │   ├── backtester.py               # Bucle principal de simulación por ventanas rodantes
-│   │   ├── portfolio.py                # Control de caja, órdenes, comisiones mínimas de 7€ y T+1
-│   │   └── tracker.py                  # Logger de experimentos en JSON y leaderboard
-│   ├── strategies/                     # Catálogo de estrategias cuantitativas implementadas
-│   │   ├── base.py                     # Clase abstracta BaseStrategy
-│   │   ├── cross_sectional_reversion.py# Micro-Alfa CS para backtesting
-│   │   ├── nr10_breakout.py            # Micro-Alfa NR10 para backtesting
-│   │   ├── ensemble_cs_nr.py           # Ensamble ponderado CS + NR10
-│   │   ├── bare_minimum.py             # Estrategia de cumplimiento mínimo legal estricto
-│   │   ├── smart_minimum_seasonal.py   # Smart BareMinimum con filtro estacional
-│   │   └── ...                         # Modelos RSI, Momentum, Reversión de Media y Sniper
-│   └── analysis/                       # Métricas de rendimiento
-│       └── evaluator.py                # Cálculo oficial del Score BME (0.6 Retorno + 0.3 Volatilidad)
-├── calendario_de_riesgo_y_eventos.md   # Calendario exhaustivo de eventos y blacklist recomendada
-└── README.md                           # Documentación principal del framework
+├── docs/                               # Strategic documentation and findings
+│   ├── CONTEXT.md                      # BME competition regulatory context
+│   ├── DESIGN_DECISIONS.md             # Quantitative architecture decision log
+│   ├── EDA_CONCLUSIONS.md              # Exploratory data analysis insights
+│   └── ESTRATEGIA_FINAL_Y_CALENDARIO.md # Comprehensive tactical manual with timeline
+├── experiments/                        # Simulation and tournament records
+│   ├── leaderboard.csv                 # Aggregate strategy leaderboard
+│   ├── master_tournament_summary.csv   # Official Master Tournament benchmark results
+│   └── logs/                           # Detailed JSON run logs per experiment
+├── notebooks/                          # Interactive Jupyter research notebooks
+│   ├── 01_eda_spanish_market.ipynb     # IBEX 35 market composition and index weight
+│   ├── 02_statistical_properties.ipynb # Day vs night variance & return distributions
+│   ├── 03_deep_quantitative_analysis.ipynb # Sector correlations & brokerage fee impact
+│   ├── 04_contest_specific_eda.ipynb   # Modeling BME fee penalty dynamics
+│   ├── 05_estrategias_sinteticas_eda.ipynb # Synthetic competitor pool prototyping
+│   └── 06_torneo_maestro_analisis_estrategias.ipynb # Master tournament mathematical analysis
+├── scripts/                            # Production scripts and utilities
+│   ├── run_live_recommendation.py      # [LIVE ENGINE] Evening recommendation (17:15 CET)
+│   ├── run_morning_exit.py             # [LIVE ENGINE] Morning liquidation (09:00 CET)
+│   ├── log_trade.py                    # Standalone CLI for trade logging and ledger status
+│   ├── setup_task_scheduler.ps1        # PowerShell script configuring Windows Task Scheduler
+│   ├── run_master_tournament.py        # Master tournament 31-agent simulation runner
+│   ├── generate_competitors_realistic.py # Synthetic competitor pool generator
+│   └── download_data.py                # Yahoo Finance historical downloader
+├── src/                                # Modular source code
+│   ├── live/                           # Production execution engine modules
+│   │   ├── corporate_events.py         # Static risk and earnings calendar
+│   │   ├── data_feed.py                # High-speed data snapshot (<2s)
+│   │   ├── engine_cs.py                # Micro-Alpha CS algorithm (20d Z-Score)
+│   │   ├── engine_nr.py                # Micro-Alpha NR10 algorithm (Range contraction)
+│   │   └── ledger.py                   # Audited trade ledger interface
+│   ├── engine/                         # Backtesting and simulation engine
+│   │   ├── backtester.py               # Rolling-window backtesting loop
+│   │   ├── portfolio.py                # Cash management, €7 min fee, T+1 tracking
+│   │   └── tracker.py                  # JSON experiment logging and leaderboard updater
+│   ├── strategies/                     # Repository of evaluated quantitative models
+│   │   ├── base.py                     # BaseStrategy abstract interface
+│   │   ├── cross_sectional_reversion.py# Micro-Alpha CS backtesting implementation
+│   │   ├── nr10_breakout.py            # Micro-Alpha NR10 backtesting implementation
+│   │   ├── ensemble_cs_nr.py           # Weighted CS + NR10 ensemble
+│   │   ├── bare_minimum.py             # Regulatory bare-minimum compliance model
+│   │   ├── smart_minimum_seasonal.py   # Seasonally-filtered bare-minimum variant
+│   │   └── ...                         # RSI, Momentum, Mean Reversion and Sniper models
+│   └── analysis/                       # Performance metrics
+│       └── evaluator.py                # Official BME Score calculator (0.6R + 0.3V)
+├── calendario_de_riesgo_y_eventos.md   # Detailed risk calendar & exclusion guidelines
+└── README.md                           # Main framework documentation
 ```
 
 ---
 
-## 🏆 7. Módulo de Investigación y Torneo Maestro
+## 🏆 7. Research Module & Master Tournament
 
-### Metodología de Ventanas Rodantes de 22 Días
-Dado que el concurso tiene una duración de exactamente un mes natural (22 sesiones hábiles), un backtest continuo convencional a 15 años distorsiona los resultados debido a efectos de capitalización acumulada y sesgos temporales.
+### 22-Day Rolling Window Methodology
+Because the tournament spans exactly one calendar month (22 trading days), conventional 15-year cumulative backtests introduce survival biases and compounding distortions.
 
-El motor [`src/engine/backtester.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/engine/backtester.py) evalúa cada modelo a través de **cientos de ventanas rodantes independientes de 22 días**:
-* Reinicia la cartera a 50.000 € de capital inicial en cada ventana.
-* Aplica las comisiones oficiales de intermediación (mínimo de 7 € por orden).
-* Aplica la fórmula oficial de BME frente a las demás estrategias activas.
-* Extrae métricas de robustez: Puntuación media, porcentaje de victorias (Win Rate % #1), y ratio de caídas máximas.
+The engine in [`src/engine/backtester.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/engine/backtester.py) assesses models across **hundreds of independent 22-day rolling windows**:
+* Resets cash to €50,000 at the start of each window.
+* Imposes official transaction fees (€7 minimum per order).
+* Ranks portfolios against concurrent competitor strategies using the official BME formula.
+* Extracts robustness statistics: average score, percentage of 1st-place finishes (Win Rate % #1), and maximum drawdown.
 
-### Pool de 31 Competidores Sintéticos y Resultados
-Para emular las condiciones reales del mercado frente a otros traders humanos y algoritmos, se diseñó un ecosistema de **31 participantes sintéticos** clasificados en 4 arquetipos:
-1. **Day Traders Agresivos:** Cierran al final del día con alto turnover (>40 operaciones/mes).
-2. **Seguidores de Tendencia (Trend Followers):** Cruces de medias móviles (SMA 20/50/200) y rupturas Donchian.
-3. **Inversores Buy & Hold / Indexados:** Exposición beta 100% al IBEX 35.
-4. **Traders Conservadores de Dividendos:** Rotación de baja frecuencia en valores defensivos.
+### Pool of 31 Synthetic Competitors & Results
+To replicate live market conditions against human traders and rival algorithms, a realistic ecosystem of **31 synthetic competitors** was modeled across 4 archetypes:
+1. **Aggressive Day Traders:** Close out positions intraday with high turnover (>40 trades/month).
+2. **Trend Followers:** Dual moving-average crossovers (SMA 20/50/200) and Donchian channel breakouts.
+3. **Index / Buy & Hold Investors:** 100% beta exposure to the IBEX 35.
+4. **Conservative Dividend Investors:** Low-frequency rotation into high-yield defensive blue-chips.
 
-En el archivo [`experiments/master_tournament_summary.csv`](file:///d:/Escritorio/Profesional/BME%20contest/experiments/master_tournament_summary.csv) se certifican los resultados del torneo:
-* Las estrategias de la familia **Micro-Alfa con Periodo de Gracia** obtienen una puntuación media de **~8.50 puntos** (sobre 9.00 posibles), alcanzando un **Win Rate superior al 85%**.
-* Su ventaja radica en asegurar el 100% de los puntos de baja volatilidad (3.0 pts), mientras que el competidor promedio del mercado obtiene menos de 1.2 puntos de volatilidad debido a las oscilaciones diurnas.
+Documented in [`experiments/master_tournament_summary.csv`](file:///d:/Escritorio/Profesional/BME%20contest/experiments/master_tournament_summary.csv):
+* **Surgical Micro-Alpha with Grace Period** variants achieve a mean score of **~8.50 points** (out of 9.00 max), securing a **Win Rate exceeding 85%**.
+* The strategy's performance edge stems from securing all 3.0 low-volatility points, whereas the average market competitor secures fewer than 1.2 volatility points due to daytime market exposure.
 
 ---
 
-## ⚡ 8. Cheat Sheet: Guía Rápida de Comandos
+## ⚡ 8. Cheat Sheet: Quick Command Guide
 
-A continuación se resumen los comandos esenciales para la operativa diaria y auditoría desde la terminal de PowerShell:
+Key PowerShell commands for daily operations, simulation testing, and ledger tracking:
 
 ```powershell
 # ==============================================================================
-# OPERATIVA DIARIA EN VIVO (Ejecución recomendada)
+# LIVE DAILY OPERATIONS (Recommended workflow)
 # ==============================================================================
 
-# 1. Sesión de Tarde (17:15 - 17:25 CET): Generar recomendación y registrar compra
+# 1. Evening Session (17:15 - 17:25 CET): Generate signals and log buy order
 python scripts/run_live_recommendation.py
 
-# 2. Simulación de Tarde para una fecha específica (testear alertas del calendario)
+# 2. Date Simulation (Test calendar alerts for specific days, e.g. Oct 27)
 python scripts/run_live_recommendation.py --date 2026-10-27
 
-# 3. Sesión de Mañana (09:00:01 CET): Liquidar posición abierta y registrar venta
+# 3. Morning Session (09:00:01 CET): Liquidate position and log sell order
 python scripts/run_morning_exit.py
 
 # ==============================================================================
-# AUDITORÍA Y GESTIÓN DEL LIBRO DE ÓRDENES (Ledger)
+# ORDER LEDGER & REGULATORY AUDIT
 # ==============================================================================
 
-# 4. Consultar estado semanal de cumplimiento de cuota BME (X de 3 compras y volumen)
+# 4. Check current week compliance quota (X of 3 trades & volume progress)
 python scripts/log_trade.py --status
 
-# 5. Modo interactivo del libro contable (añadir compra, añadir venta o listar histórico)
+# 5. Interactive ledger manager (view trade history or log manual trades)
 python scripts/log_trade.py
 
-# 6. Registrar directamente una operación por línea de comandos
+# 6. Direct trade logging via CLI flags
 python scripts/log_trade.py --buy ENG.MC 54 16.53
 python scripts/log_trade.py --sell ENG.MC 54 16.60
 
 # ==============================================================================
-# AUTOMATIZACIÓN EN WINDOWS TASK SCHEDULER
+# WINDOWS TASK SCHEDULER AUTOMATION
 # ==============================================================================
 
-# 7. Registrar o reinstalar las dos tareas programadas automáticas de Windows
+# 7. Install or reinstall scheduled background tasks in Windows
 powershell -ExecutionPolicy Bypass -File scripts/setup_task_scheduler.ps1
 
 # ==============================================================================
-# BACKTESTING Y EXPERIMENTACIÓN
+# BACKTESTING & EXPERIMENTAL PIPELINE
 # ==============================================================================
 
-# 8. Re-ejecutar el Torneo Maestro completo de 31 estrategias
+# 8. Re-run the full 31-agent Master Tournament
 python scripts/run_master_tournament.py
 
-# 9. Descargar histórico actualizado de cotizaciones
+# 9. Download fresh historical market data
 python scripts/download_data.py
 ```
