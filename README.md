@@ -35,7 +35,7 @@
 
 This repository hosts both the **quantitative research & backtesting framework** and the **real-time live decision and execution engine** engineered specifically to maximize win probability in the official BME Stock Trading Competition.
 
-Evaluating over 15 quantitative strategies across 15 years of Spanish continuous market history (IBEX 35) via Monte Carlo simulations and 22-day rolling windows against a realistic pool of market participants demonstrated that traditional intraday trading loses systematically due to brokerage fee structures (minimum €7 fixed fee per trade) and diurnal market volatility.
+Evaluating over 15 quantitative strategies across 15 years of Spanish continuous market history (IBEX 35) via 22-day rolling-window walk-forward backtesting against a realistic pool of market participants demonstrated that traditional intraday trading loses systematically due to brokerage fee structures (minimum €7 fixed fee per trade) and diurnal market volatility.
 
 The winning paradigm, termed **Surgical Micro-Alpha**, mathematically exploits the asymmetric payoff embedded in BME's rules:
 * Maintains the portfolio **100% in cash (liquidity)** during regular market hours (8.5 hours of continuous trading), locking in an ultra-low annualized portfolio volatility of **~0.20%** (versus >10–15% for typical market participants).
