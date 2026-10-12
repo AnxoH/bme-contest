@@ -9,3 +9,5 @@ y mediante un analisis del Z-score.
 - Organización de las carpetas
 - Estructuración análisis de datos de forma correcta
 - Preparar para que se ejecute
+- Calendario corporativo de evemtos durante el concurso
+- Live executor
