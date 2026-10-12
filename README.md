@@ -155,38 +155,44 @@ flowchart TD
 ### Engine 1: Micro-Alpha CS (Cross-Sectional Reversion)
 A statistical arbitrage strategy exploiting intraday mean reversion across the utilities basket:
 
-1. **Intraday Return:** Measures current session price displacement from market open:
+#### 1. Intraday Return
+Measures current session price displacement from market open:
 
-   $$R_{\text{intra}, i} = \frac{P_{17:25, i} - \text{Open}_i}{\text{Open}_i}$$
+$$R_{\text{intra}, i} = \frac{P_{17:25, i} - \text{Open}_i}{\text{Open}_i}$$
 
-2. **Z-Score Normalization (20-Day Rolling Window):**
+#### 2. Z-Score Normalization (20-Day Rolling Window)
 
-   $$Z_i = \frac{R_{\text{intra}, i} - \mu_{20, i}}{\sigma_{20, i}}$$
+$$Z_i = \frac{R_{\text{intra}, i} - \mu_{20, i}}{\sigma_{20, i}}$$
 
-   Where $\mu_{20, i}$ and $\sigma_{20, i}$ represent the historical mean and standard deviation of daily intraday returns over the prior 20 sessions (excluding today).
+Where $\mu_{20, i}$ and $\sigma_{20, i}$ represent the historical mean and standard deviation of daily intraday returns over the prior 20 sessions (excluding today).
 
-3. **Selection Criterion:** Ranked in ascending order by $Z_i$. **Rank 1** corresponds to the asset exhibiting the greatest relative statistical oversold condition, maximizing the probability of an elastic bounce (*mean reversion*) at next morning's market open.
+#### 3. Selection Criterion
+Ranked in ascending order by $Z_i$. **Rank 1** corresponds to the asset exhibiting the greatest relative statistical oversold condition, maximizing the probability of an elastic bounce (*mean reversion*) at next morning's market open.
 
 ### Engine 2: Micro-Alpha NR10 (Narrow Range 10 Compression)
 An extreme volatility contraction strategy (adapted from Toby Crabel's classic Narrow Range principle):
 
-1. **Normalized Daily Range:** High-to-low session spread normalized by opening price:
+#### 1. Normalized Daily Range
+High-to-low session spread normalized by opening price:
 
-   $$\text{Range}_{t, i} = \frac{\text{High}_{t, i} - \text{Low}_{t, i}}{\text{Open}_{t, i}}$$
+$$\text{Range}_{t, i} = \frac{\text{High}_{t, i} - \text{Low}_{t, i}}{\text{Open}_{t, i}}$$
 
-2. **NR10 Contraction Ratio:** Compares today's range against the 10-day historical moving average:
+#### 2. NR10 Contraction Ratio
+Compares today's range against the 10-day historical moving average:
 
-   $$\text{NRRatio}_i = \frac{\text{Range}_{t, i}}{\mu_{\text{Range}, 10d, i}}$$
+$$\text{NRRatio}_i = \frac{\text{Range}_{t, i}}{\mu_{\text{Range}, 10d, i}}$$
 
-3. **Directional Support Filter:** Price location within the daily session spread:
+#### 3. Directional Support Filter
+Price location within the daily session spread:
 
-   $$\text{Position}_{t, i} = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
+$$\text{Position}_{t, i} = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
 
-   Assets consolidated in the lower half ($\text{Position}_{t, i} \le 0.50$) near support are prioritized.
+Assets consolidated in the lower half ($\text{Position} \le 0.50$) near support are prioritized.
 
-4. **Selection Criterion:**
-   * **Primary criterion:** Prioritize assets consolidated in the lower half of their range ($\text{Position}_{t, i} \le 0.50$).
-   * **Secondary criterion:** Lowest $\text{NRRatio}_i$ (maximum volatility contraction). Extreme range contraction forecasts an elastic upward expansion at the next morning's market open.
+#### 4. Selection Criterion
+* **Primary filter:** Prioritize assets consolidated in the lower half of their range ($\text{Position} \le 0.50$).
+* **Secondary ranking:** Lowest $\text{NRRatio}_i$ (maximum volatility contraction). Extreme range contraction forecasts an elastic upward expansion at the next morning's market open.
+
 
 ---
 
