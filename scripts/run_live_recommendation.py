@@ -177,11 +177,65 @@ def main():
     print("INSTRUCCIONES PARA EL TRADER:")
     print("  1. Compara las dos recomendaciones anteriores y decide cuál ejecutar.")
     print("  2. Introduce la orden a mercado en el broker de BME antes de las 17:29:50.")
-    print("  3. Una vez ejecutada la orden en el broker, registra los datos exactos ejecutando:")
-    print(f"       python scripts/log_trade.py --buy [TICKER] [ACCIONES] [PRECIO_REAL]")
-    print(f"     Ejemplo CS:   python scripts/log_trade.py --buy {top_cs['Ticker']} {top_cs['Acciones']} {top_cs['Precio_Actual']:.2f}")
-    print(f"     Ejemplo NR10: python scripts/log_trade.py --buy {top_nr['Ticker']} {top_nr['Acciones']} {top_nr['Precio_Actual']:.2f}")
-    print("  4. Recuerda programar la venta de salida mañana a las 09:00:01 CET a precio de Apertura.")
+    print("  3. Puedes registrar la compra directamente a continuación pulsando [1] o [2].")
+    print("  4. Recuerda que la venta de salida se ejecutará mañana a las 09:00:01 CET a precio de Apertura.")
+    print("=" * 95)
+
+    # 9. Registro Interactivo Directo en Caliente
+    print("\n" + "-" * 95)
+    print("¿DESEAS REGISTRAR LA COMPRA EJECUTADA AHORA MISMO?")
+    print(f"  [1] Registrar recomendación CS   --> {top_cs['Ticker']}: {top_cs['Acciones']} accs a ~{top_cs['Precio_Actual']:.2f} €")
+    print(f"  [2] Registrar recomendación NR10 --> {top_nr['Ticker']}: {top_nr['Acciones']} accs a ~{top_nr['Precio_Actual']:.2f} €")
+    print(f"  [3] Registrar manualmente otro activo / precio real")
+    print(f"  [0 o Enter] Salir sin registrar por ahora")
+    print("-" * 95)
+    
+    try:
+        user_choice = input("Selecciona una opción [1/2/3/Enter]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        user_choice = ""
+        
+    if user_choice == '1':
+        try:
+            px_input = input(f"Precio real en broker [Enter para {top_cs['Precio_Actual']:.2f} €]: ").strip()
+            final_px = float(px_input.replace(',', '.')) if px_input else top_cs['Precio_Actual']
+            sh_input = input(f"Acciones ejecutadas [Enter para {top_cs['Acciones']}]: ").strip()
+            final_sh = int(sh_input) if sh_input else top_cs['Acciones']
+            
+            rec = ledger.record_trade('BUY', top_cs['Ticker'], final_sh, final_px)
+            print(f"\n[OK] COMPRA REGISTRADA EN EL LIBRO OFICIAL:")
+            print(f"     {final_sh} acciones de {top_cs['Ticker']} a {final_px:.2f} € ({rec['Importe_EUR']:.2f} €)")
+            print(f"     Mañana a las 09:00:00 se abrirá la tarea de salida para registrar la venta.")
+        except Exception as e:
+            print(f"[ERROR] No se pudo registrar: {e}")
+            
+    elif user_choice == '2':
+        try:
+            px_input = input(f"Precio real en broker [Enter para {top_nr['Precio_Actual']:.2f} €]: ").strip()
+            final_px = float(px_input.replace(',', '.')) if px_input else top_nr['Precio_Actual']
+            sh_input = input(f"Acciones ejecutadas [Enter para {top_nr['Acciones']}]: ").strip()
+            final_sh = int(sh_input) if sh_input else top_nr['Acciones']
+            
+            rec = ledger.record_trade('BUY', top_nr['Ticker'], final_sh, final_px)
+            print(f"\n[OK] COMPRA REGISTRADA EN EL LIBRO OFICIAL:")
+            print(f"     {final_sh} acciones de {top_nr['Ticker']} a {final_px:.2f} € ({rec['Importe_EUR']:.2f} €)")
+            print(f"     Mañana a las 09:00:00 se abrirá la tarea de salida para registrar la venta.")
+        except Exception as e:
+            print(f"[ERROR] No se pudo registrar: {e}")
+            
+    elif user_choice == '3':
+        try:
+            t_input = input("Ticker comprado (ej: ENG.MC, ELE.MC): ").strip().upper()
+            sh_input = int(input("Número de acciones: ").strip())
+            px_input = float(input("Precio real de ejecución (€): ").strip().replace(',', '.'))
+            
+            rec = ledger.record_trade('BUY', t_input, sh_input, px_input)
+            print(f"\n[OK] COMPRA REGISTRADA EN EL LIBRO OFICIAL:")
+            print(f"     {sh_input} acciones de {t_input} a {px_input:.2f} € ({rec['Importe_EUR']:.2f} €)")
+        except Exception as e:
+            print(f"[ERROR] No se pudo registrar: {e}")
+    else:
+        print("\nSesión finalizada. Recuerda que puedes registrar más tarde con 'python scripts/log_trade.py'.")
     print("=" * 95 + "\n")
 
 if __name__ == '__main__':

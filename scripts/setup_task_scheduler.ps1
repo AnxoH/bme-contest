@@ -1,43 +1,68 @@
 # ==============================================================================
-# Script de PowerShell: Registrar Tarea Programada para BME Contest Live Engine
-# Horario: Lunes a Jueves a las 17:15 CET
+# Script de PowerShell: Registrar Tareas Programadas para BME Contest Live Engine
+# 1. Tarea de Tarde (Recomendación y Compra): Lunes a Jueves a las 17:15 CET
+# 2. Tarea de Mañana (Salida y Venta T+1): Martes a Viernes a las 09:00 CET
 # ==============================================================================
 
-$TaskName = "BME_Contest_LiveRecommender"
 $WorkingDirectory = "d:\Escritorio\Profesional\BME contest"
 
 Write-Host "=================================================================" -ForegroundColor Cyan
 Write-Host " CONFIGURACION DEL PROGRAMADOR DE TAREAS DE WINDOWS (BME CONTEST)" -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor Cyan
 Write-Host "Ruta de Trabajo: $WorkingDirectory"
-Write-Host "Hora de Ejecucion: 17:15 CET (Lunes a Jueves)"
 
-# Accion: Abrir una ventana interactiva de PowerShell con el script ejecutado
-$ScriptCommand = "Set-Location 'd:\Escritorio\Profesional\BME contest'; python scripts/run_live_recommendation.py"
-$Argument = "-NoExit -Command `"$ScriptCommand`""
-$Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $Argument -WorkingDirectory $WorkingDirectory
-
-# Disparador: Semanal Lunes, Martes, Miercoles y Jueves a las 17:15
-$Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday, Tuesday, Wednesday, Thursday -At 17:15
-
-# Configuracion adicional
+# Configuración compartida de batería/energía
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 
-# Registrar o actualizar tarea
+# ------------------------------------------------------------------------------
+# 1. TAREA DE LA TARDE (17:15 CET): Recomendación y Registro de Compra
+# ------------------------------------------------------------------------------
+$TaskBuyName = "BME_Contest_EveningBuy"
+$CmdBuy = "Set-Location 'd:\Escritorio\Profesional\BME contest'; python scripts/run_live_recommendation.py"
+$ActionBuy = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoExit -Command `"$CmdBuy`"" -WorkingDirectory $WorkingDirectory
+$TriggerBuy = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday, Tuesday, Wednesday, Thursday -At 17:15
+
 try {
-    $existing = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-    if ($existing) {
-        Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
-        Write-Host "Tarea previa eliminada para actualizar configuracion..." -ForegroundColor Yellow
-    }
+    # Eliminar antigua si existe
+    $oldBuy = Get-ScheduledTask -TaskName $TaskBuyName -ErrorAction SilentlyContinue
+    if ($oldBuy) { Unregister-ScheduledTask -TaskName $TaskBuyName -Confirm:$false }
     
-    Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "Ejecucion diaria del motor de recomendaciones BME Contest a las 17:15 CET"
-    
-    Write-Host "`n[EXITO] Tarea '$TaskName' registrada correctamente en Windows." -ForegroundColor Green
-    Write-Host "Se ejecutara de Lunes a Jueves a las 17:15 CET abriendo una ventana con las recomendaciones."
-    Write-Host "`nPara probar la tarea ahora mismo manualmente, ejecuta:"
-    Write-Host "  Start-ScheduledTask -TaskName '$TaskName'" -ForegroundColor Yellow
+    # También limpiar el nombre anterior si existía
+    $legacy = Get-ScheduledTask -TaskName "BME_Contest_LiveRecommender" -ErrorAction SilentlyContinue
+    if ($legacy) { Unregister-ScheduledTask -TaskName "BME_Contest_LiveRecommender" -Confirm:$false }
+
+    Register-ScheduledTask -TaskName $TaskBuyName -Action $ActionBuy -Trigger $TriggerBuy -Settings $Settings -Description "BME Contest: Recomendación y registro de compra diaria (17:15 CET)"
+    Write-Host "`n[EXITO] Tarea 1 Registrada: '$TaskBuyName'" -ForegroundColor Green
+    Write-Host "  -> Horario: Lunes a Jueves a las 17:15 CET"
 } catch {
-    Write-Host "`n[ERROR] No se pudo registrar la tarea." -ForegroundColor Red
-    Write-Host $_.Exception.Message
+    Write-Host "`n[ERROR] No se pudo registrar '$TaskBuyName': $($_.Exception.Message)" -ForegroundColor Red
 }
+
+# ------------------------------------------------------------------------------
+# 2. TAREA DE LA MAÑANA (09:00 CET): Salida y Registro de Venta T+1
+# ------------------------------------------------------------------------------
+$TaskSellName = "BME_Contest_MorningSell"
+$CmdSell = "Set-Location 'd:\Escritorio\Profesional\BME contest'; python scripts/run_morning_exit.py"
+$ActionSell = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoExit -Command `"$CmdSell`"" -WorkingDirectory $WorkingDirectory
+$TriggerSell = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Tuesday, Wednesday, Thursday, Friday -At 09:00
+
+try {
+    $oldSell = Get-ScheduledTask -TaskName $TaskSellName -ErrorAction SilentlyContinue
+    if ($oldSell) { Unregister-ScheduledTask -TaskName $TaskSellName -Confirm:$false }
+
+    Register-ScheduledTask -TaskName $TaskSellName -Action $ActionSell -Trigger $TriggerSell -Settings $Settings -Description "BME Contest: Salida de apertura y registro de venta T+1 (09:00 CET)"
+    Write-Host "`n[EXITO] Tarea 2 Registrada: '$TaskSellName'" -ForegroundColor Green
+    Write-Host "  -> Horario: Martes a Viernes a las 09:00 CET"
+} catch {
+    Write-Host "`n[ERROR] No se pudo registrar '$TaskSellName': $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "`n=================================================================" -ForegroundColor Cyan
+Write-Host " RESUMEN DE AUTOMATIZACION" -ForegroundColor Cyan
+Write-Host "=================================================================" -ForegroundColor Cyan
+Write-Host "1. A las 17:15 CET (L-J): Se abre la ventana para ver CS vs NR10 y registrar la compra."
+Write-Host "2. A las 09:00 CET (M-V): Se abre la ventana para ejecutar y registrar la venta de salida."
+Write-Host "`nPara probar las tareas manualmente ahora mismo:"
+Write-Host "  Start-ScheduledTask -TaskName '$TaskBuyName'" -ForegroundColor Yellow
+Write-Host "  Start-ScheduledTask -TaskName '$TaskSellName'" -ForegroundColor Yellow
+Write-Host "=================================================================" -ForegroundColor Cyan
