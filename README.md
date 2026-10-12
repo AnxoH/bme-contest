@@ -299,10 +299,10 @@ BME_contest/
 │   ├── master_tournament_summary.csv   # Official Master Tournament benchmark results
 │   └── logs/                           # Detailed JSON run logs per experiment
 ├── notebooks/                          # Interactive Jupyter quantitative research series
-│   ├── 01_mercado_y_restricciones_bme.ipynb # IBEX 35 concentration, liquidity & BME €7 fee modeling
-│   ├── 02_anomalia_overnight_y_universo_utilities.ipynb # Day vs night variance & 5 utilities low-vol basket
-│   ├── 03_motores_micro_alfa_y_eventos.ipynb # Micro-Alpha CS (Z-Score) & NR10 (Crabel) + event risk
-│   ├── 04_validacion_torneo_maestro.ipynb # Master tournament benchmark (31 agents, ~89% win rate)
+│   ├── 01_market_structure_and_bme_restrictions.ipynb # IBEX 35 concentration, liquidity & BME €7 fee modeling
+│   ├── 02_overnight_anomaly_and_utilities_universe.ipynb # Day vs night variance & 5 utilities low-vol basket
+│   ├── 03_micro_alpha_engines_and_events.ipynb # Micro-Alpha CS (Z-Score) & NR10 (Crabel) + event risk
+│   ├── 04_master_tournament_validation.ipynb # Master tournament benchmark (31 agents, ~89% win rate)
 │   └── archive/                        # Preserved historical exploratory notebooks
 ├── scripts/                            # Production scripts and utilities
 │   ├── run_live_recommendation.py      # [LIVE ENGINE] Evening recommendation (17:15 CET)
