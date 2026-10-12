@@ -176,17 +176,17 @@ An extreme volatility contraction strategy (adapted from Toby Crabel's classic N
 
 2. **NR10 Contraction Ratio:** Compares today's range against the 10-day historical moving average:
 
-   $$\text{NR\_Ratio}_i = \frac{\text{Range}_{t, i}}{\mu_{\text{Range}, 10d, i}}$$
+   $$\text{NRRatio}_i = \frac{\text{Range}_{t, i}}{\mu_{\text{Range}, 10d, i}}$$
 
 3. **Directional Support Filter:** Price location within the daily session spread:
 
-   $$\text{Pos\_Range}_i = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
+   $$\text{Position}_{t, i} = \frac{P_{17:25, i} - \text{Low}_{t, i}}{\text{High}_{t, i} - \text{Low}_{t, i}}$$
 
-   Assets consolidated in the lower half ($\text{Pos\_Range}_i \le 0.50$) near support are prioritized.
+   Assets consolidated in the lower half ($\text{Position}_{t, i} \le 0.50$) near support are prioritized.
 
 4. **Selection Criterion:**
-   * **Primary criterion:** Prioritize assets consolidated in the lower half of their range ($\text{Pos\_Range}_i \le 0.50$).
-   * **Secondary criterion:** Lowest $\text{NR\_Ratio}_i$ (maximum volatility contraction). Extreme range contraction forecasts an elastic upward expansion at the next morning's market open.
+   * **Primary criterion:** Prioritize assets consolidated in the lower half of their range ($\text{Position}_{t, i} \le 0.50$).
+   * **Secondary criterion:** Lowest $\text{NRRatio}_i$ (maximum volatility contraction). Extreme range contraction forecasts an elastic upward expansion at the next morning's market open.
 
 ---
 
