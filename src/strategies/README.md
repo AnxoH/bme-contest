@@ -36,7 +36,7 @@
      - [19. `SeasonalitySafeHaven` (`seasonality_safehaven.py`)](#19-seasonalitysafehaven-seasonality_safehavenpy)
      - [20. `TurnaroundTuesday` (`turnaround_tuesday.py`)](#20-turnaroundtuesday-turnaround_tuesdaypy)
      - [21. `UltraLowVolMomentum` (`ultralowvol_momentum.py`)](#21-ultralowvolmomentum-ultralowvol_momentumpy)
-4. [Master Tournament Results Across Strategies](#4-master-tournament-results-across-strategies)
+4. [Master Tournament Results Across Strategies (Sorted by Win Rate)](#4-master-tournament-results-across-strategies-sorted-by-win-rate)
 
 ---
 
@@ -130,7 +130,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Logic:**
   1. *Open Liquidation:* Liquidates any open position of `RED.MC` held $\ge 1$ day at 09:00:01 open.
   2. *Close Buy:* Unconditionally emits a buy order for €1,200 of `RED.MC` at 17:29:50.
-* **Empirical Behavior:** Achieves the lowest gross annualized volatility in historical simulations ($0.19\%$). However, running 10 trades weekly generates €70/week in broker fees, producing a cumulative 1-month return of $-0.59\%$. Friday night positions also expose the portfolio to weekend gap risk without improving competition scoring.
+* **Empirical Behavior:** Achieves the lowest gross annualized volatility in historical simulations (0.19%). However, running 10 trades weekly generates €70/week in broker fees, producing a cumulative 1-month return of -0.59%. Friday night positions also expose the portfolio to weekend gap risk without improving competition scoring.
 
 #### 2. `SmartMinimumSeasonal` (`smart_minimum_seasonal.py`)
 * **Class:** `SmartMinimumSeasonal` | **Instance Name:** `SmartMin_Seasonal`
@@ -145,7 +145,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
   if day_of_week in [0, 1, 2]:
       orders.append({'ticker': 'RED.MC', 'action': 'buy', 'amount_eur': 2500})
   ```
-* **Empirical Behavior:** Champion of Phase 4 ($35.88\%$ win rate). Avoiding Monday open gaps (from weekend events) improved net 1-month return from $-0.59\%$ to $-0.36\%$, maintaining an ultra-low annualized volatility of $0.35\%$.
+* **Empirical Behavior:** Champion of Phase 4 (35.88% win rate). Avoiding Monday open gaps (from weekend events) improved net 1-month return from -0.59% to -0.36%, maintaining an ultra-low annualized volatility of 0.35%.
 
 #### 3. `SmartMinimumContrarian` (`smart_minimum_contrarian.py`)
 * **Class:** `SmartMinimumContrarian` | **Instance Name:** `SmartMin_Contrarian`
@@ -155,10 +155,10 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Order Sizing:** €2,500 per order
 * **Hypothesis:** Regulated utilities exhibit strong intraday mean reversion. Entering long only after a down session captures an elastic rebound during the morning open auction.
 * **Logic:**
-  1. Evaluates session displacement: $\text{is\_red\_day} = (\text{Close}_t < \text{Open}_t)$.
-  2. On Monday, Tuesday, or Wednesday, buys only if $\text{is\_red\_day} == \text{True}$.
+  1. Evaluates session displacement: `is_red_day = (Close < Open)`.
+  2. On Monday, Tuesday, or Wednesday, buys only if `is_red_day == True`.
   3. On Thursday and Friday, forces execution if fewer trades have occurred, guaranteeing compliance.
-* **Empirical Behavior:** Win rate of $21.10\%$ in Phase 4. Narrows 1-month loss to $-0.39\%$ with $0.34\%$ annualized volatility.
+* **Empirical Behavior:** Win rate of 21.10% in Phase 4. Narrows 1-month loss to -0.39% with 0.34% annualized volatility.
 
 #### 4. `SmartMinimumIntraday` (`smart_minimum_intraday.py`)
 * **Class:** `SmartMinimumIntraday` | **Instance Name:** `SmartMin_Intraday`
@@ -170,7 +170,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Mathematical Formulation:**
   $$\text{Disp}_t = \left| \frac{\text{Close}_t}{\text{Open}_t} - 1 \right|, \quad \mu_{\text{Disp}, 10} = \frac{1}{10} \sum_{k=0}^9 \text{Disp}_{t-k}$$
   $$\text{Trigger} = (\text{Disp}_t < \mu_{\text{Disp}, 10}) \quad \text{for Monday to Wednesday}$$
-* **Empirical Behavior:** Filters turbulent sessions effectively, recording $0.34\%$ annualized volatility and $-0.42\%$ 1-month return.
+* **Empirical Behavior:** Filters turbulent sessions effectively, recording 0.34% annualized volatility and -0.42% 1-month return.
 
 ---
 
@@ -182,12 +182,12 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Universe:** 5 Regulated Utilities (`RED.MC`, `ENG.MC`, `ELE.MC`, `IBE.MC`, `NTGY.MC`)
 * **Trading Frequency:** Monday, Tuesday, Wednesday at 17:29:50 CET
 * **Order Sizing:** €900 per order (€2,700 weekly volume)
-* **Hypothesis:** Rotates capital strictly to the utility experiencing the greatest intraday dislocation relative to its historical distribution. Sizing at €900 satisfies the regulatory €2,500 weekly minimum with a cushion (€2,700), while keeping $98.2\%$ of the portfolio in zero-risk cash.
+* **Hypothesis:** Rotates capital strictly to the utility experiencing the greatest intraday dislocation relative to its historical distribution. Sizing at €900 satisfies the regulatory €2,500 weekly minimum with a cushion (€2,700), while keeping 98.2% of the portfolio in zero-risk cash.
 * **Mathematical Formulation:**
   $$R_{\text{intra}, t, i} = \frac{\text{Close}_{t, i} - \text{Open}_{t, i}}{\text{Open}_{t, i}}$$
   $$Z_{t, i} = \frac{R_{\text{intra}, t, i} - \mu_{20}(R_{\text{intra}, i})}{\sigma_{20}(R_{\text{intra}, i})}$$
-  $$\text{Selected Asset} = \arg\min_{i \in \mathcal{U}} (Z_{t, i})$$
-* **Empirical Behavior:** Annualized volatility collapses to **$0.20\% - 0.21\%$**. High gross win rate ($31.3\%$ absolute #1 finishes in Phase 6). With Grace Period support, achieves an average tournament score of **8.4962 points**.
+  $$\text{Selected Asset} = \operatorname{argmin}_{i \in \mathcal{U}} (Z_{t, i})$$
+* **Empirical Behavior:** Annualized volatility collapses to **0.20% - 0.21%**. High gross win rate (31.3% absolute #1 finishes in Phase 6). With Grace Period support, achieves an average tournament score of **8.4962 points**.
 
 #### 6. `MicroAlfaQuirurgico` — NR10 Engine (`micro_alfa_quirurgico.py`)
 * **Class:** `MicroAlfaQuirurgico(engine='nr10')` | **Instance Name:** `MicroAlfa_NR10`
@@ -198,11 +198,11 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Hypothesis:** Extreme range contraction (Toby Crabel's Narrow Range principle) on regulated utilities forecasts an expansive directional rebound at next morning's open, particularly when the price has consolidated in the lower half of the session range.
 * **Mathematical Formulation:**
   1. *Normalized Range:* $\text{Range}_{t, i} = \frac{\text{High}_{t, i} - \text{Low}_{t, i}}{\text{Open}_{t, i}}$
-  2. *NR10 Condition:* $\text{Range}_{t, i} \le \min_{k=0..9} (\text{Range}_{t-k, i})$
+  2. *NR10 Condition:* $\text{Range}_{t, i} \le \min_{k=0, \dots, 9} (\text{Range}_{t-k, i})$
   3. *Directional Support Filter:* $\text{Close}_{t, i} < \frac{\text{High}_{t, i} + \text{Low}_{t, i}}{2}$
   4. *Fallback Ranking:* If no utility satisfies both strict conditions, selects the lowest relative compression:
-     $$\arg\min_{i \in \mathcal{U}} \left( \frac{\text{Range}_{t, i}}{\mu_{10}(\text{Range}_i)} \right)$$
-* **Empirical Behavior:** Annualized volatility of $0.21\%$, average 1-month return of $-0.246\%$ (with Grace Period), and a $25.53\%$ win rate in Phase 7.
+     $$\operatorname{argmin}_{i \in \mathcal{U}} \left( \frac{\text{Range}_{t, i}}{\mu_{10}(\text{Range}_i)} \right)$$
+* **Empirical Behavior:** Annualized volatility of 0.21%, average 1-month return of -0.246% (with Grace Period), and a 25.53% win rate in Phase 7.
 
 #### 7. `EnsembleCSNR` (`ensemble_cs_nr.py`)
 * **Class:** `EnsembleCSNR` | **Instance Name:** `Ensemble_CS_NR`
@@ -216,8 +216,8 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
   2. *Factor 2 (Range Compression):* Computes $\text{NRRatio}_i = \frac{\text{Range}_{t, i}}{\mu_{10}(\text{Range}_i)}$. Ranks ascending: $\text{Rank}_{\text{NR}, i} \in \{1, 2, 3, 4, 5\}$ (1 = most compressed).
   3. *Combined Matrix:*
      $$\text{Score}_i = \text{Rank}_{Z, i} + \text{Rank}_{\text{NR}, i}$$
-     $$\text{Selected Asset} = \arg\min_{i \in \mathcal{U}} (\text{Score}_i, Z_i)$$
-* **Empirical Behavior:** **Top-ranked historical strategy.** Achieves the highest mean score (**8.4965 points**) and lowest return degradation ($-0.241\%$ monthly) with an annualized volatility of $0.20\%$.
+     $$\text{Selected Asset} = \operatorname{argmin}_{i \in \mathcal{U}} (\text{Score}_i, Z_i)$$
+* **Empirical Behavior:** **Top-ranked historical strategy.** Achieves the highest mean score (**8.4965 points**) and lowest return degradation (-0.241% monthly) with an annualized volatility of 0.20%.
 
 ---
 
@@ -227,13 +227,13 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Class:** `CrossSectionalReversion` | **Instance Name:** `CS_MeanReversion`
 * **Source:** [`src/strategies/cross_sectional_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/cross_sectional_reversion.py)
 * **Universe:** 5 Regulated Utilities
-* **Order Sizing:** €4,667 per order (dilutes the €7 fixed fee to exactly $0.15\%$)
+* **Order Sizing:** €4,667 per order (dilutes the €7 fixed fee to exactly 0.15%)
 * **Execution Frequency:** Maximum 3 trades per calendar week
 * **Hypothesis:** Combines the mathematical fee neutralization of €4,667 with a strict statistical entry threshold ($Z < -1.0$).
 * **Survival Fallback:**
   - If $\min(Z) < -1.0$, enters long on the most oversold utility.
-  - If Thursday or Friday arrives and $\text{weekly\_buys} < 3$, executes unconditionally to fulfill BME regulatory quotas.
-* **Empirical Behavior:** Generates $-0.34\%$ 1-month return with $0.65\%$ annualized volatility.
+  - If Thursday or Friday arrives and `weekly_buys < 3`, executes unconditionally to fulfill BME regulatory quotas.
+* **Empirical Behavior:** Generates -0.34% 1-month return with 0.65% annualized volatility.
 
 #### 9. `NR10Breakout` (`nr10_breakout.py`)
 * **Class:** `NR10Breakout` | **Instance Name:** `NR10_Breakout`
@@ -242,7 +242,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Order Sizing:** €4,667 per order
 * **Hypothesis:** Evaluates Toby Crabel's NR10 pattern across utilities using €4,667 sizing.
 * **Survival Fallback:** Bypasses strict NR10 conditions on Thursday/Friday if fewer than 3 weekly buys have executed, selecting the asset with the lowest relative range ratio.
-* **Empirical Behavior:** Best gross monthly return among quantitative models ($-0.28\%$ to $-0.31\%$), with $0.54\% - 0.57\%$ annualized volatility.
+* **Empirical Behavior:** Best gross monthly return among quantitative models (-0.28% to -0.31%), with 0.54% - 0.57% annualized volatility.
 
 #### 10. `ContinuousUtilityReversion` (`continuous_utility_reversion.py`)
 * **Class:** `ContinuousUtilityReversion` | **Instance Name:** `BareMinimum_Alpha`
@@ -251,7 +251,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Trading Frequency:** 5 nights per week (Monday through Friday)
 * **Order Sizing:** €4,667 per order
 * **Hypothesis:** Removes threshold filters from cross-sectional mean reversion to trade continuously every night, capturing daily rotation alpha without zero-exposure sessions.
-* **Empirical Behavior:** $0.83\%$ annualized volatility and $-0.55\%$ 1-month return.
+* **Empirical Behavior:** 0.83% annualized volatility and -0.55% 1-month return.
 
 ---
 
@@ -264,11 +264,11 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Parameters:** `vol_window=20`, `mom_window=10`, `top_n_vol=5`, `order_amount=2500`
 * **Hypothesis:** Merges low-volatility anomaly screening with medium-term momentum.
 * **Logic:**
-  1. Computes 20-day return volatility across all stocks: $\sigma_{20, i} = \text{std}(R_{t-19..t, i})$.
+  1. Computes 20-day return volatility across all stocks: $\sigma_{20, i} = \text{std}(R_{t-19 \dots t, i})$.
   2. Isolates the top 5 lowest-volatility stocks: $\mathcal{S}_5 = \text{nsmallest}_5(\sigma_{20})$.
   3. Selects the stock with highest 10-day price momentum:
-     $$\arg\max_{i \in \mathcal{S}_5} \left( \frac{P_{t, i}}{P_{t-10, i}} - 1 \right)$$
-* **Empirical Behavior:** Best-performing traditional multi-asset model. Volatility is $0.44\%$, but daytime exposure limits its win rate to $4.44\%$ in Phase 3.
+     $$\operatorname{argmax}_{i \in \mathcal{S}_5} \left( \frac{P_{t, i}}{P_{t-10, i}} - 1 \right)$$
+* **Empirical Behavior:** Best-performing traditional multi-asset model. Volatility is 0.44%, but daytime exposure limits its win rate to 4.44% in Phase 3.
 
 #### 12. `PatientSniperStrategy` (`patient_sniper.py`)
 * **Class:** `PatientSniperStrategy` | **Instance Name:** `Patient_Sniper_60v_40rsi`
@@ -276,10 +276,10 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Parameters:** `vol_window=60`, `rsi_window=14`, `rsi_threshold=40`, `base_amount=2500`, `snipe_amount=10000`
 * **Hypothesis:** Dynamic low-volatility screening with dual-tier sizing.
 * **Logic:**
-  1. Identifies the lowest-volatility stock over a 60-day window: $i^* = \arg\min_i (\sigma_{60, i})$.
+  1. Identifies the lowest-volatility stock over a 60-day window: $i^* = \operatorname{argmin}_i (\sigma_{60, i})$.
   2. Baseline mode: Buys €2,500 daily to fulfill regulatory turnover.
   3. Sniper mode: If $\text{RSI}_{14}(i^*) < 40$, sizing increases to €10,000.
-* **Empirical Behavior:** $0.63\%$ annualized volatility and $-0.63\%$ 1-month return.
+* **Empirical Behavior:** 0.63% annualized volatility and -0.63% 1-month return.
 
 #### 13. `ConservativeBlueChipRotation` (`conservative_rotation.py`)
 * **Class:** `ConservativeBlueChipRotation` | **Instance Name:** `Conservative_BC_Rotation`
@@ -288,8 +288,8 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Trading Frequency:** Monday, Wednesday, Friday
 * **Order Sizing:** €2,500 per order
 * **Hypothesis:** Rotational momentum across top-tier institutional stocks, executing 3 times weekly to minimize market presence.
-* **Formulation:** $\arg\max_i (P_{t, i} / P_{t-5, i} - 1)$ across the blue-chip universe.
-* **Empirical Behavior:** $0.46\%$ annualized volatility and $-0.37\%$ 1-month return.
+* **Formulation:** $\operatorname{argmax}_i (P_{t, i} / P_{t-5, i} - 1)$ across the blue-chip universe.
+* **Empirical Behavior:** 0.46% annualized volatility and -0.37% 1-month return.
 
 #### 14. `BaselineReversion` (`baseline_reversion.py`)
 * **Class:** `BaselineReversion` | **Instance Name:** `Fade the Winner (SMA200 + RSI3)`
@@ -298,15 +298,15 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Parameters:** `order_amount=2500`, `rsi_period=3`, `sma_period=200`
 * **Hypothesis:** Classical swing mean reversion. Buys extreme short-term dips within major secular bull trends.
 * **Formulation:**
-  $$\text{Filter: } P_{t, i} > \text{SMA}_{200}(P_i), \quad \text{Selection: } \arg\min_i (\text{RSI}_{3, i})$$
-* **Empirical Behavior:** $0.69\%$ annualized volatility and $-0.55\%$ 1-month return.
+  $$\text{Filter: } P_{t, i} > \text{SMA}_{200}(P_i), \quad \text{Selection: } \operatorname{argmin}_i (\text{RSI}_{3, i})$$
+* **Empirical Behavior:** 0.69% annualized volatility and -0.55% 1-month return.
 
 #### 15. `OvernightQualityReversion` (`quality_reversion.py`)
 * **Class:** `OvernightQualityReversion` | **Instance Name:** `Quality_Reversion_200`
 * **Source:** [`src/strategies/quality_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/quality_reversion.py)
 * **Parameters:** `allocation_eur=2500`, `sma_period=200`, `min_sma_dist=1.05`
-* **Hypothesis:** Institutional dip-buying. Requires stock price to be at least $5\%$ above its 200-day moving average ($P_{t, i} > 1.05 \times \text{SMA}_{200}$), selecting the qualifying stock with the worst 1-day return ($P_{t, i} / P_{t-1, i} - 1$).
-* **Empirical Behavior:** $0.67\%$ annualized volatility; lower qualification rate in flat/bear market windows where fewer stocks satisfy the $+5\%$ buffer.
+* **Hypothesis:** Institutional dip-buying. Requires stock price to be at least 5% above its 200-day moving average ($P_{t, i} > 1.05 \times \text{SMA}_{200}$), selecting the qualifying stock with the worst 1-day return ($P_{t, i} / P_{t-1, i} - 1$).
+* **Empirical Behavior:** 0.67% annualized volatility; lower qualification rate in flat/bear market windows where fewer stocks satisfy the $+5\%$ buffer.
 
 #### 16. `RsiOvernightReversion` (`rsi_reversion.py`)
 * **Class:** `RsiOvernightReversion` | **Instance Name:** `RSI_Overnight_3d`
@@ -314,7 +314,7 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Universe:** Full IBEX 35
 * **Parameters:** `rsi_period=3`, `allocation_eur=2500`
 * **Hypothesis:** Unconstrained cross-sectional oversold ranking. Buys the single lowest $\text{RSI}_3$ in the market regardless of trend.
-* **Empirical Behavior:** $0.68\%$ annualized volatility and $-0.50\%$ 1-month return.
+* **Empirical Behavior:** 0.68% annualized volatility and -0.50% 1-month return.
 
 #### 17. `SingleAssetMaster` (`single_asset.py`)
 * **Class:** `SingleAssetMaster` | **Instance Name:** `SingleAsset_IBE`
@@ -322,28 +322,28 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Target Asset:** `IBE.MC` (configurable)
 * **Trading Frequency:** Monday, Wednesday, Friday
 * **Hypothesis:** Single-stock benchmark with dynamic sizing. Buys €5,000 if yesterday was negative ($P_t < P_{t-1}$), otherwise buys €2,500.
-* **Empirical Behavior:** $0.49\%$ annualized volatility and $-0.40\%$ 1-month return.
+* **Empirical Behavior:** 0.49% annualized volatility and -0.40% 1-month return.
 
 #### 18. `MeanReversionStrategy` (`mean_reversion.py`)
 * **Class:** `MeanReversionStrategy` | **Instance Name:** `MeanReversion_Surv`
 * **Source:** [`src/strategies/mean_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/mean_reversion.py)
 * **Universe:** `CABK.MC`, `RED.MC`, `VIS.MC`, `SAN.MC`
 * **Hypothesis:** Large-size swing model (€10,000 on $\text{RSI}_3 < 15$ and $P > \text{SMA}_{200}$) coupled with a deterministic Wednesday survival engine that checks accumulated weekly buys and volume, injecting maintenance trades on defensive stocks to fulfill quotas.
-* **Empirical Behavior:** $1.55\%$ annualized volatility and $-0.57\%$ 1-month return.
+* **Empirical Behavior:** 1.55% annualized volatility and -0.57% 1-month return.
 
 #### 19. `SeasonalitySafeHaven` (`seasonality_safehaven.py`)
 * **Class:** `SeasonalitySafeHaven` | **Instance Name:** `Seasonality_SafeHaven`
 * **Source:** [`src/strategies/seasonality_safehaven.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/seasonality_safehaven.py)
 * **Trading Frequency:** Monday, Wednesday, Friday
 * **Hypothesis:** Turn-of-the-month anomaly. Sizes up to €10,000 when $\text{Day} > 25$ or $\text{Day} < 5$ on the least volatile 20-day stock, allocating €2,500 on other days.
-* **Empirical Behavior:** $0.84\%$ annualized volatility and $-0.50\%$ 1-month return.
+* **Empirical Behavior:** 0.84% annualized volatility and -0.50% 1-month return.
 
 #### 20. `TurnaroundTuesday` (`turnaround_tuesday.py`)
 * **Class:** `TurnaroundTuesday` | **Instance Name:** `Turnaround_Tuesday`
 * **Source:** [`src/strategies/turnaround_tuesday.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/turnaround_tuesday.py)
 * **Parameters:** `allocation_eur=10000`, `dummy_allocation=2500`
 * **Hypothesis:** Monday sentiment overreactions revert on Tuesday morning. Injects €10,000 on Monday close into the worst-performing stock of the session; allocates €2,500 maintenance orders on Wednesday and Friday.
-* **Empirical Behavior:** $1.10\%$ annualized volatility and $-0.57\%$ 1-month return.
+* **Empirical Behavior:** 1.10% annualized volatility and -0.57% 1-month return.
 
 #### 21. `UltraLowVolMomentum` (`ultralowvol_momentum.py`)
 * **Class:** `UltraLowVolMomentum` | **Instance Name:** `UltraLowVol_Momentum`
@@ -351,36 +351,36 @@ All models inherit from [`BaseStrategy`](file:///d:/Escritorio/Profesional/BME%2
 * **Parameters:** `allocation_eur=2500`
 * **Trading Frequency:** Monday, Wednesday, Friday
 * **Hypothesis:** Isolates the 5 lowest-volatility stocks over 20 days and selects the top performer based on 5-day momentum.
-* **Empirical Behavior:** $0.36\%$ annualized volatility, $-0.36\%$ 1-month return, and an $8.14$ average tournament rank.
+* **Empirical Behavior:** 0.36% annualized volatility, -0.36% 1-month return, and an 8.14 average tournament rank.
 
 ---
 
-## 4. Master Tournament Results Across Strategies
+## 4. Master Tournament Results Across Strategies (Sorted by Win Rate)
 
-In the unconstrained 1,500-session simulation (135 independent 22-day rolling windows) benchmarking all 21 models alongside 10 synthetic competitor archetypes, the strategies ranked as follows:
+In the unconstrained 1,500-session simulation (135 independent 22-day rolling windows) benchmarking all 21 models alongside 10 synthetic competitor archetypes, the strategies ranked by **Global Win Rate (% of 1st-place finishes)** as follows:
 
-| Rank | Model Name | Class / File | Avg Score (/9.0) | Win Rate (#1) | Top 3 Rate | 1M Return | Annual Vol | Strategic Role |
+| Rank | Model Name | Class / File | Win Rate (#1) | Top 3 Rate | Avg Score (/9.0) | 1M Return | Annual Vol | Strategic Profile |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| 🥇 1 | **SmartMin_Seasonal** | [`smart_minimum_seasonal.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_seasonal.py) | **8.4581** | 0.74% | 8.15% | -0.36% | 0.35% | Mon–Wed fixed schedule champion |
-| 🥈 2 | **BareMinimum** | [`bare_minimum.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/bare_minimum.py) | 8.4569 | 0.00% | 0.00% | -0.59% | **0.19%** | Lowest gross volatility baseline |
-| 🥉 3 | **SmartMin_Contrarian** | [`smart_minimum_contrarian.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_contrarian.py) | 8.4559 | 2.22% | 7.41% | -0.39% | 0.34% | Intraday red-day rebound |
-| 4 | **SmartMin_Intraday** | [`smart_minimum_intraday.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_intraday.py) | 8.4549 | 0.74% | 1.48% | -0.42% | 0.34% | Daytime calm filter |
-| 5 | **Conservative_BC_Rotation** | [`conservative_rotation.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/conservative_rotation.py) | 8.4500 | 0.74% | 3.70% | -0.37% | 0.46% | Blue-chip momentum rotation |
-| 6 | **SingleAsset_IBE** | [`single_asset.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/single_asset.py) | 8.4450 | 0.00% | 2.22% | -0.40% | 0.49% | Single-asset Iberdrola benchmark |
-| 7 | **RSI_Overnight_3d** | [`rsi_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/rsi_reversion.py) | 8.4277 | 0.00% | 0.00% | -0.50% | 0.68% | Broad IBEX 35 RSI oversold |
-| 8 | **Fade the Winner** | [`baseline_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/baseline_reversion.py) | 8.4246 | 0.00% | 0.00% | -0.55% | 0.69% | Trend-filtered RSI swing |
-| 9 | **BareMinimum_Alpha** | [`continuous_utility_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/continuous_utility_reversion.py) | 8.4160 | 0.00% | 0.00% | -0.55% | 0.83% | Continuous 5-day utility rotation |
-| 10 | **Slow_Train_20v_10m** | [`slow_train.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/slow_train.py) | 8.3775 | 0.74% | 0.74% | -0.59% | 0.44% | Best traditional multi-asset model |
-| 11 | **MeanReversion_Surv** | [`mean_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/mean_reversion.py) | 8.3761 | 0.00% | 0.00% | -0.57% | 1.55% | €10k swing + Wednesday survival |
-| 12 | **UltraLowVol_Momentum** | [`ultralowvol_momentum.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/ultralowvol_momentum.py) | 8.3309 | 4.44% | 9.63% | -0.36% | 0.36% | Low-vol 3-day momentum basket |
-| 13 | **Turnaround_Tuesday** | [`turnaround_tuesday.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/turnaround_tuesday.py) | 8.3274 | 0.00% | 0.00% | -0.57% | 1.10% | €10k Monday reversal exploit |
-| 14 | **CS_MeanReversion** | [`cross_sectional_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/cross_sectional_reversion.py) | 8.3144 | 2.22% | 5.93% | -0.34% | 0.65% | €4,667 threshold Z-score engine |
-| 15 | **Seasonality_SafeHaven** | [`seasonality_safehaven.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/seasonality_safehaven.py) | 8.2944 | 0.00% | 0.00% | -0.50% | 0.84% | Turn-of-the-month dynamic sizing |
-| 16 | **NR10_Breakout** | [`nr10_breakout.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/nr10_breakout.py) | 8.1361 | 1.48% | 2.96% | **-0.28%** | 0.54% | €4,667 Toby Crabel breakout |
-| 17 | **Patient_Sniper_60v_40rsi**| [`patient_sniper.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/patient_sniper.py) | 8.1109 | 0.00% | 0.00% | -0.63% | 0.63% | 60d least-vol + €10k RSI sniper |
-| 18 | **Ensemble_CS_NR** | [`ensemble_cs_nr.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/ensemble_cs_nr.py) | 8.0574* | **24.44%** | **75.56%** | **-0.24%** | **0.21%** | Multi-factor Z + NR cross-ranking |
-| 19 | **MicroAlfa_CS** | [`micro_alfa_quirurgico.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/micro_alfa_quirurgico.py) | 8.0572* | **24.44%** | **74.81%** | **-0.24%** | **0.21%** | €900 surgical Z-score rotation |
-| 20 | **MicroAlfa_NR10** | [`micro_alfa_quirurgico.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/micro_alfa_quirurgico.py) | 8.0568* | **19.26%** | **75.56%** | **-0.24%** | **0.21%** | €900 surgical NR10 contraction |
-| 21 | **Quality_Reversion_200** | [`quality_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/quality_reversion.py) | 7.2742 | 0.00% | 0.74% | -0.46% | 0.67% | Trend dip-buying on IBEX leaders |
+| 🥇 1 | **Ensemble_CS_NR** | [`ensemble_cs_nr.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/ensemble_cs_nr.py) | **24.44%** | **75.56%** | 8.0574* | **-0.24%** | **0.21%** | Multi-factor Z + NR cross-ranking |
+| 🥈 2 | **MicroAlfa_CS** | [`micro_alfa_quirurgico.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/micro_alfa_quirurgico.py) | **24.44%** | **74.81%** | 8.0572* | **-0.24%** | **0.21%** | €900 surgical Z-score rotation |
+| 🥉 3 | **MicroAlfa_NR10** | [`micro_alfa_quirurgico.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/micro_alfa_quirurgico.py) | **19.26%** | **75.56%** | 8.0568* | **-0.24%** | **0.21%** | €900 surgical NR10 contraction |
+| 4 | **UltraLowVol_Momentum** | [`ultralowvol_momentum.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/ultralowvol_momentum.py) | 4.44% | 9.63% | 8.3309 | -0.36% | 0.36% | Low-vol 3-day momentum basket |
+| 5 | **SmartMin_Contrarian** | [`smart_minimum_contrarian.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_contrarian.py) | 2.22% | 7.41% | 8.4559 | -0.39% | 0.34% | Intraday red-day rebound |
+| 6 | **CS_MeanReversion** | [`cross_sectional_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/cross_sectional_reversion.py) | 2.22% | 5.93% | 8.3144 | -0.34% | 0.65% | €4,667 threshold Z-score engine |
+| 7 | **NR10_Breakout** | [`nr10_breakout.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/nr10_breakout.py) | 1.48% | 2.96% | 8.1361 | **-0.28%** | 0.54% | €4,667 Toby Crabel breakout |
+| 8 | **SmartMin_Seasonal** | [`smart_minimum_seasonal.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_seasonal.py) | 0.74% | 8.15% | **8.4581** | -0.36% | 0.35% | Mon–Wed fixed schedule champion |
+| 9 | **Conservative_BC_Rotation** | [`conservative_rotation.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/conservative_rotation.py) | 0.74% | 3.70% | 8.4500 | -0.37% | 0.46% | Blue-chip momentum rotation |
+| 10 | **SmartMin_Intraday** | [`smart_minimum_intraday.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/smart_minimum_intraday.py) | 0.74% | 1.48% | 8.4549 | -0.42% | 0.34% | Daytime calm filter |
+| 11 | **Slow_Train_20v_10m** | [`slow_train.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/slow_train.py) | 0.74% | 0.74% | 8.3775 | -0.59% | 0.44% | Best traditional multi-asset model |
+| 12 | **SingleAsset_IBE** | [`single_asset.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/single_asset.py) | 0.00% | 2.22% | 8.4450 | -0.40% | 0.49% | Single-asset Iberdrola benchmark |
+| 13 | **Quality_Reversion_200** | [`quality_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/quality_reversion.py) | 0.00% | 0.74% | 7.2742 | -0.46% | 0.67% | Trend dip-buying on IBEX leaders |
+| 14 | **BareMinimum** | [`bare_minimum.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/bare_minimum.py) | 0.00% | 0.00% | 8.4569 | -0.59% | **0.19%** | Lowest gross volatility baseline |
+| 15 | **RSI_Overnight_3d** | [`rsi_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/rsi_reversion.py) | 0.00% | 0.00% | 8.4277 | -0.50% | 0.68% | Broad IBEX 35 RSI oversold |
+| 16 | **Fade the Winner** | [`baseline_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/baseline_reversion.py) | 0.00% | 0.00% | 8.4246 | -0.55% | 0.69% | Trend-filtered RSI swing |
+| 17 | **BareMinimum_Alpha** | [`continuous_utility_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/continuous_utility_reversion.py) | 0.00% | 0.00% | 8.4160 | -0.55% | 0.83% | Continuous 5-day utility rotation |
+| 18 | **MeanReversion_Surv** | [`mean_reversion.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/mean_reversion.py) | 0.00% | 0.00% | 8.3761 | -0.57% | 1.55% | €10k swing + Wednesday survival |
+| 19 | **Turnaround_Tuesday** | [`turnaround_tuesday.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/turnaround_tuesday.py) | 0.00% | 0.00% | 8.3274 | -0.57% | 1.10% | €10k Monday reversal exploit |
+| 20 | **Seasonality_SafeHaven** | [`seasonality_safehaven.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/seasonality_safehaven.py) | 0.00% | 0.00% | 8.2944 | -0.50% | 0.84% | Turn-of-the-month dynamic sizing |
+| 21 | **Patient_Sniper_60v_40rsi**| [`patient_sniper.py`](file:///d:/Escritorio/Profesional/BME%20contest/src/strategies/patient_sniper.py) | 0.00% | 0.00% | 8.1109 | -0.63% | 0.63% | 60d least-vol + €10k RSI sniper |
 
-*\*Note on Rows 18–20: In unconstrained generic backtests with an arbitrary 5-day grace period, holiday weeks occasionally missed the 3-week quota threshold. In the calibrated BME competition calendar (Phase 7), `Ensemble_CS_NR` and `MicroAlfa_CS` achieve 100% qualification, a **mean score of 8.4965 points**, and **89.36% Top-1 win rates**.*
+*\*Note on Rows 1–3: In unconstrained generic backtest windows with an arbitrary 5-day grace period, holiday weeks occasionally missed the 3-week quota threshold. In the calibrated official BME competition calendar (Phase 7), `Ensemble_CS_NR`, `MicroAlfa_CS`, and `MicroAlfa_NR10` achieve 100% qualification, a **mean score of 8.4965 points**, and an aggregate **89.36% Top-1 win rate**.*
